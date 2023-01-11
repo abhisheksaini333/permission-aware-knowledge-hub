@@ -35,6 +35,7 @@ class Store:
   key=document_key(tenant,source)
   with self.transaction():
    old=self.document(key)
+   if old and not old["deleted"] and all(old[k]==v for k,v in dict(title=title,content=content,groups=sorted(set(groups))).items()):return old
    revision=old["revision"]+1 if old else 1
    doc=dict(id=key,tenant=tenant,source=source,title=title,content=content,groups=sorted(set(groups)),revision=revision,digest=content_digest(content),deleted=False,status="pending")
    self._save(doc)
