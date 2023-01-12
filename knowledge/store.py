@@ -41,3 +41,7 @@ class Store:
    self._save(doc)
    self.db.execute("INSERT INTO revisions VALUES(?,?,?)",(key,revision,json.dumps(doc)))
   return doc
+
+ def documents(self,tenant):
+  with self.lock:
+   return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM documents WHERE tenant=? ORDER BY id",(tenant,)).fetchall()]
