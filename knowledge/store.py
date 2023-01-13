@@ -12,6 +12,7 @@ class Store:
   self.db.execute("PRAGMA journal_mode=WAL")
   self.db.executescript("""
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS chunks(id TEXT PRIMARY KEY,document_id TEXT NOT NULL,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS revisions(document_id TEXT,revision INTEGER,body TEXT NOT NULL,PRIMARY KEY(document_id,revision));
   """)
  @contextmanager
@@ -45,3 +46,18 @@ class Store:
  def documents(self,tenant):
   with self.lock:
    return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM documents WHERE tenant=? ORDER BY id",(tenant,)).fetchall()]
+
+ def index(self,key,revision,chunks):
+  with self.transaction():
+   doc=self.document(key)
+   if not doc or doc["deleted"] or doc["revision"]!=revision:return False
+   self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,))
+   for i,chunk in enumerate(chunks):
+    c=dict(chunk,id=f"{key}:{revision}:{i}",document_id=key,revision=revision,tenant=doc["tenant"])
+    self.db.execute("INSERT INTO chunks VALUES(?,?,?,?)",(c["id"],key,doc["tenant"],json.dumps(c)))
+   doc["status"]="ready";self._save(doc)
+  return True
+ def chunks(self,tenant):
+  with self.lock:
+   chunks=[json.loads(r[0]) for r in self.db.execute("SELECT body FROM chunks WHERE tenant=? ORDER BY id",(tenant,))]
+   return [c for c in chunks if (d:=self.document(c["document_id"])) and not d["deleted"] and d["revision"]==c["revision"] and d["status"]=="ready"]
