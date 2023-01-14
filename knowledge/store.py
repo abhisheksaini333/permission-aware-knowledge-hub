@@ -61,3 +61,12 @@ class Store:
   with self.lock:
    chunks=[json.loads(r[0]) for r in self.db.execute("SELECT body FROM chunks WHERE tenant=? ORDER BY id",(tenant,))]
    return [c for c in chunks if (d:=self.document(c["document_id"])) and not d["deleted"] and d["revision"]==c["revision"] and d["status"]=="ready"]
+
+ def delete(self,key,tenant):
+  with self.transaction():
+   doc=self.document(key)
+   if not doc or doc["tenant"]!=tenant:return False
+   if doc["deleted"]:return True
+   doc.update(deleted=True,status="deleted",content="",revision=doc["revision"]+1)
+   self._save(doc);self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,))
+  return True
