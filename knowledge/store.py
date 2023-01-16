@@ -12,6 +12,7 @@ class Store:
   self.db.execute("PRAGMA journal_mode=WAL")
   self.db.executescript("""
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS chunks(id TEXT PRIMARY KEY,document_id TEXT NOT NULL,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS revisions(document_id TEXT,revision INTEGER,body TEXT NOT NULL,PRIMARY KEY(document_id,revision));
   """)
@@ -40,6 +41,8 @@ class Store:
    revision=old["revision"]+1 if old else 1
    doc=dict(id=key,tenant=tenant,source=source,title=title,content=content,groups=sorted(set(groups)),revision=revision,digest=content_digest(content),deleted=False,status="pending")
    self._save(doc)
+   job=dict(id=f"{key}:{revision}",document_id=key,tenant=tenant,revision=revision,status="pending",attempts=0,available_at=0,lease_until=0,owner=None,error=None)
+   self.db.execute("INSERT INTO jobs VALUES(?,?,?)",(job["id"],tenant,json.dumps(job)))
    self.db.execute("INSERT INTO revisions VALUES(?,?,?)",(key,revision,json.dumps(doc)))
   return doc
 
@@ -70,3 +73,7 @@ class Store:
    doc.update(deleted=True,status="deleted",content="",revision=doc["revision"]+1)
    self._save(doc);self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,))
   return True
+
+ def jobs(self,tenant):
+  with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM jobs WHERE tenant=? ORDER BY id",(tenant,))]
+ def _save_job(self,job):self.db.execute("UPDATE jobs SET body=? WHERE id=?",(json.dumps(job),job["id"]))
