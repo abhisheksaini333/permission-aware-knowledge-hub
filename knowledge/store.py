@@ -77,3 +77,13 @@ class Store:
  def jobs(self,tenant):
   with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM jobs WHERE tenant=? ORDER BY id",(tenant,))]
  def _save_job(self,job):self.db.execute("UPDATE jobs SET body=? WHERE id=?",(json.dumps(job),job["id"]))
+
+ def claim(self,owner,now=None,lease_seconds=60):
+  now=time.time() if now is None else now
+  with self.transaction():
+   for row in self.db.execute("SELECT body FROM jobs ORDER BY id").fetchall():
+    j=json.loads(row[0])
+    if (j["status"]=="pending" and j["available_at"]<=now) or (j["status"]=="running" and j["lease_until"]<=now):
+     j.update(status="running",owner=owner,attempts=j["attempts"]+1,lease_until=now+lease_seconds)
+     self._save_job(j);return j
+  return None
