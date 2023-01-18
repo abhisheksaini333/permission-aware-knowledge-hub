@@ -87,3 +87,18 @@ class Store:
      j.update(status="running",owner=owner,attempts=j["attempts"]+1,lease_until=now+lease_seconds)
      self._save_job(j);return j
   return None
+
+ def finish(self,job,error=None,now=None,max_attempts=3):
+  now=time.time() if now is None else now
+  with self.transaction():
+   row=self.db.execute("SELECT body FROM jobs WHERE id=?",(job["id"],)).fetchone()
+   if not row:return False
+   live=json.loads(row[0])
+   if live["status"]!="running" or live["owner"]!=job["owner"] or live["attempts"]!=job["attempts"]:return False
+   status="succeeded" if not error else ("failed" if live["attempts"]>=max_attempts else "pending")
+   live.update(status=status,error=error,available_at=now+min(60,2**live["attempts"]),lease_until=0)
+   self._save_job(live)
+   if status=="failed":
+    doc=self.document(live["document_id"])
+    if doc and not doc["deleted"] and doc["revision"]==live["revision"]:doc["status"]="failed";self._save(doc)
+  return True
