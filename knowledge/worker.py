@@ -18,6 +18,7 @@ class IndexWorker:
     offset+=len(text)+1
    if self.encoder:
     vectors=self.encoder.encode([c["text"] for c in chunks])
+    if len(vectors)!=len(chunks):raise ValueError("Embedding count mismatch")
     for c,v in zip(chunks,vectors):c["vector"]=v
    self.store.index(doc["id"],job["revision"],chunks)
    self.store.finish(job)
