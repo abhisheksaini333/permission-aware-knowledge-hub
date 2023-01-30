@@ -17,3 +17,11 @@ def lexical(query,chunks):
     score+=idf*d[t]*2.5/(d[t]+1.5*(.25+.75*length/avg))
   if score:out.append((chunk,score))
  return sorted(out,key=lambda x:(-x[1],x[0]["id"]))
+
+def cosine(a,b):
+ if len(a)!=len(b) or not a or not all(math.isfinite(v) for v in [*a,*b]):raise ValueError("Invalid embedding vector")
+ norm=math.sqrt(sum(x*x for x in a)*sum(x*x for x in b))
+ return sum(x*y for x,y in zip(a,b))/norm if norm else 0.
+
+def dense(vector,chunks):
+ return sorted([(c,cosine(vector,c["vector"])) for c in chunks if "vector" in c],key=lambda x:(-x[1],x[0]["id"]))
