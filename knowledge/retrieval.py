@@ -25,3 +25,13 @@ def cosine(a,b):
 
 def dense(vector,chunks):
  return sorted([(c,cosine(vector,c["vector"])) for c in chunks if "vector" in c],key=lambda x:(-x[1],x[0]["id"]))
+
+def fuse(*rankings,k=60):
+ scores={};chunks={}
+ for ranking in rankings:
+  seen=set()
+  for rank,(chunk,_) in enumerate(ranking,1):
+   key=chunk["id"]
+   if key in seen:continue
+   seen.add(key);chunks[key]=chunk;scores[key]=scores.get(key,0)+1/(k+rank)
+ return sorted([(chunks[k],s) for k,s in scores.items()],key=lambda x:(-x[1],x[0]["id"]))
