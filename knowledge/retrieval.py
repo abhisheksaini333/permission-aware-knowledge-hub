@@ -35,3 +35,12 @@ def fuse(*rankings,k=60):
    if key in seen:continue
    seen.add(key);chunks[key]=chunk;scores[key]=scores.get(key,0)+1/(k+rank)
  return sorted([(chunks[k],s) for k,s in scores.items()],key=lambda x:(-x[1],x[0]["id"]))
+
+def rerank(query,ranking):
+ q=tokens(query);terms=set(q)
+ def score(item):
+  c,_=item;ct=set(tokens(c["text"]))
+  coverage=len(terms&ct)/max(1,len(terms))
+  phrase=.25 if " ".join(q) in " ".join(tokens(c["text"])) else 0
+  return coverage+phrase
+ return sorted([(c,score((c,s))) for c,s in ranking],key=lambda x:(-x[1],x[0]["id"]))
