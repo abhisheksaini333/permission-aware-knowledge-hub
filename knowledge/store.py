@@ -12,6 +12,7 @@ class Store:
   self.db.execute("PRAGMA journal_mode=WAL")
   self.db.executescript("""
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS memberships(tenant TEXT,subject TEXT,body TEXT NOT NULL,PRIMARY KEY(tenant,subject));
   CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS chunks(id TEXT PRIMARY KEY,document_id TEXT NOT NULL,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS revisions(document_id TEXT,revision INTEGER,body TEXT NOT NULL,PRIMARY KEY(document_id,revision));
@@ -102,3 +103,14 @@ class Store:
     doc=self.document(live["document_id"])
     if doc and not doc["deleted"] and doc["revision"]==live["revision"]:doc["status"]="failed";self._save(doc)
   return True
+
+ def set_membership(self,tenant,subject,groups,roles):
+  with self.transaction():
+   body=json.dumps(dict(groups=sorted(set(groups)),roles=sorted(set(roles))))
+   self.db.execute("INSERT INTO memberships VALUES(?,?,?) ON CONFLICT(tenant,subject) DO UPDATE SET body=excluded.body",(tenant,subject,body))
+ def resolve(self,principal):
+  from .identity import Principal
+  with self.lock:
+   row=self.db.execute("SELECT body FROM memberships WHERE tenant=? AND subject=?",(principal.tenant,principal.subject)).fetchone()
+   if not row:return principal
+   record=json.loads(row[0]);return Principal(principal.subject,principal.tenant,frozenset(record["groups"]),frozenset(record["roles"]))
