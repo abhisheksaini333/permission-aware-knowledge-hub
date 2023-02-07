@@ -20,3 +20,12 @@ class KnowledgeHub:
    ranking=vec if mode=="dense" else fuse(lex,vec)
    if mode=="rerank":ranking=rerank(query,ranking)
   return [dict(c,score=score,title=self.store.document(c["document_id"])["title"],source=self.store.document(c["document_id"])["source"]) for c,score in ranking[:limit]]
+
+ def ask(self,principal,question,mode="lexical"):
+  from .answers import build_prompt,citations,supported
+  hits=self.search(principal,question,mode,limit=3)
+  prompt,used=build_prompt(question,hits)
+  if not used or not self.generator:return dict(answer="No supported answer is available.",abstained=True,citations=[],cached=False)
+  answer=self.generator.generate(prompt).strip()
+  if not supported(answer,used):return dict(answer="The available evidence does not support a reliable answer.",abstained=True,citations=[],cached=False)
+  return dict(answer=answer,abstained=False,citations=citations(used),cached=False)
