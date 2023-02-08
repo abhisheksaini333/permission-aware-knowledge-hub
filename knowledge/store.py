@@ -12,6 +12,7 @@ class Store:
   self.db.execute("PRAGMA journal_mode=WAL")
   self.db.executescript("""
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS cache(tenant TEXT,key TEXT,expires REAL NOT NULL,body TEXT NOT NULL,PRIMARY KEY(tenant,key));
   CREATE TABLE IF NOT EXISTS memberships(tenant TEXT,subject TEXT,body TEXT NOT NULL,PRIMARY KEY(tenant,subject));
   CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS chunks(id TEXT PRIMARY KEY,document_id TEXT NOT NULL,tenant TEXT NOT NULL,body TEXT NOT NULL);
@@ -114,3 +115,12 @@ class Store:
    row=self.db.execute("SELECT body FROM memberships WHERE tenant=? AND subject=?",(principal.tenant,principal.subject)).fetchone()
    if not row:return principal
    record=json.loads(row[0]);return Principal(principal.subject,principal.tenant,frozenset(record["groups"]),frozenset(record["roles"]))
+
+ def cache_put(self,tenant,key,value,now=None,ttl=300):
+  now=time.time() if now is None else now
+  with self.transaction():self.db.execute("INSERT INTO cache VALUES(?,?,?,?) ON CONFLICT(tenant,key) DO UPDATE SET body=excluded.body,expires=excluded.expires",(tenant,key,now+ttl,json.dumps(value)))
+ def cache_get(self,tenant,key,now=None):
+  now=time.time() if now is None else now
+  with self.lock:
+   row=self.db.execute("SELECT body FROM cache WHERE tenant=? AND key=? AND expires>?",(tenant,key,now)).fetchone()
+   return json.loads(row[0]) if row else None
