@@ -27,5 +27,7 @@ class KnowledgeHub:
   prompt,used=build_prompt(question,hits)
   if not used or not self.generator:return dict(answer="No supported answer is available.",abstained=True,citations=[],cached=False)
   answer=self.generator.generate(prompt).strip()
+  valid={c["id"] for c in self.visible_chunks(principal)}
+  if any(h["id"] not in valid for h in used):return dict(answer="Evidence changed while answering. Please try again.",abstained=True,citations=[],cached=False)
   if not supported(answer,used):return dict(answer="The available evidence does not support a reliable answer.",abstained=True,citations=[],cached=False)
   return dict(answer=answer,abstained=False,citations=citations(used),cached=False)
