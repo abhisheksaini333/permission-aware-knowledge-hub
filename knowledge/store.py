@@ -12,6 +12,7 @@ class Store:
   self.db.execute("PRAGMA journal_mode=WAL")
   self.db.executescript("""
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS feedback(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS cache(tenant TEXT,key TEXT,expires REAL NOT NULL,body TEXT NOT NULL,PRIMARY KEY(tenant,key));
   CREATE TABLE IF NOT EXISTS memberships(tenant TEXT,subject TEXT,body TEXT NOT NULL,PRIMARY KEY(tenant,subject));
   CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
@@ -124,3 +125,12 @@ class Store:
   with self.lock:
    row=self.db.execute("SELECT body FROM cache WHERE tenant=? AND key=? AND expires>?",(tenant,key,now)).fetchone()
    return json.loads(row[0]) if row else None
+
+ def feedback(self,tenant,subject,question_hash,rating,comment):
+  import uuid
+  if rating not in {"helpful","incorrect","missing_source"} or len(comment)>1000:raise ValueError("Invalid feedback")
+  key=str(uuid.uuid4());value=dict(id=key,subject=subject,question_hash=question_hash,rating=rating,comment=comment)
+  with self.transaction():self.db.execute("INSERT INTO feedback VALUES(?,?,?)",(key,tenant,json.dumps(value)))
+  return key
+ def feedback_records(self,tenant):
+  with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM feedback WHERE tenant=?",(tenant,))]
