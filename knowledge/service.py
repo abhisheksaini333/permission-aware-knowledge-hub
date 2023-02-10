@@ -23,6 +23,13 @@ class KnowledgeHub:
 
  def ask(self,principal,question,mode="lexical"):
   from .answers import build_prompt,citations,supported
+  import json
+  from .content import content_digest
+  effective=self.store.resolve(principal)
+  signature=dict(subject=principal.subject,groups=sorted(effective.groups),roles=sorted(effective.roles),chunks=[c["id"] for c in self.visible_chunks(principal)],question=question,mode=mode)
+  cache_key=content_digest(json.dumps(signature,sort_keys=True))
+  cached=self.store.cache_get(principal.tenant,cache_key)
+  if cached:return dict(cached,cached=True)
   hits=self.search(principal,question,mode,limit=3)
   prompt,used=build_prompt(question,hits)
   if not used or not self.generator:return dict(answer="No supported answer is available.",abstained=True,citations=[],cached=False)
@@ -30,4 +37,6 @@ class KnowledgeHub:
   valid={c["id"] for c in self.visible_chunks(principal)}
   if any(h["id"] not in valid for h in used):return dict(answer="Evidence changed while answering. Please try again.",abstained=True,citations=[],cached=False)
   if not supported(answer,used):return dict(answer="The available evidence does not support a reliable answer.",abstained=True,citations=[],cached=False)
-  return dict(answer=answer,abstained=False,citations=citations(used),cached=False)
+  result=dict(answer=answer,abstained=False,citations=citations(used),cached=False)
+  self.store.cache_put(principal.tenant,cache_key,result)
+  return result
