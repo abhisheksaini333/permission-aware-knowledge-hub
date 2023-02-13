@@ -21,3 +21,25 @@ class MiniLMEncoder:
     hidden=self.model(**batch).last_hidden_state.cpu().numpy()
     result.extend(mean_pool(hidden,batch["attention_mask"].cpu().numpy()).tolist())
   return result
+
+def generation_limits(max_tokens):
+ if not 1<=max_tokens<=128:raise ValueError("Generation token budget must be 1..128")
+ return dict(max_new_tokens=max_tokens,do_sample=False,num_beams=1)
+
+class FlanGenerator:
+ def __init__(self,path,max_tokens=64):
+  import torch
+  from transformers import AutoTokenizer,AutoModelForSeq2SeqLM
+  torch.set_num_threads(2)
+  self.tokenizer=AutoTokenizer.from_pretrained(path,local_files_only=True)
+  self.model=AutoModelForSeq2SeqLM.from_pretrained(path,local_files_only=True).eval()
+  self.options=generation_limits(max_tokens);self.capacity=threading.BoundedSemaphore(1)
+ def generate(self,prompt):
+  import torch
+  if not self.capacity.acquire(timeout=2):raise RuntimeError("Answer model is busy")
+  try:
+   batch=self.tokenizer(prompt,return_tensors="pt",truncation=False)
+   if batch["input_ids"].shape[1]>512:raise ValueError("Evidence exceeds model input limit")
+   with torch.no_grad():output=self.model.generate(**batch,**self.options)
+   return self.tokenizer.decode(output[0],skip_special_tokens=True)
+  finally:self.capacity.release()
