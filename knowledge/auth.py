@@ -12,3 +12,12 @@ def decode_token(token,key,issuer,audience):
   if not isinstance(roles,list) or not {"reader","admin"}.intersection(roles):raise ValueError("Missing application role")
   return Principal(subject,tenant,frozenset(groups),frozenset(roles))
  except (jwt.PyJWTError,ValueError,TypeError,KeyError) as exc:raise AuthError("Invalid or expired access token") from exc
+
+class OIDCVerifier:
+ def __init__(self,issuer,audience):
+  self.issuer=issuer.rstrip("/");self.audience=audience
+  self.jwks=jwt.PyJWKClient(self.issuer+"/protocol/openid-connect/certs",cache_keys=True)
+ def verify(self,token):
+  try:key=self.jwks.get_signing_key_from_jwt(token).key
+  except Exception as exc:raise AuthError("Unable to verify access token") from exc
+  return decode_token(token,key,self.issuer,self.audience)
