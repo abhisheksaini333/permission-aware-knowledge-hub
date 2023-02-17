@@ -17,4 +17,8 @@ def create_app(hub,verifier=None):
  def health():return {"status":"ok"}
  @app.get("/api/me")
  def me(p=Depends(principal)):return dict(subject=p.subject,tenant=p.tenant,groups=sorted(p.groups),roles=sorted(p.roles))
+ @app.get("/api/search")
+ def search(q:str,mode:str="lexical",limit:int=5,p=Depends(principal)):
+  try:return {"hits":hub.search(p,q,mode,limit)}
+  except ValueError as exc:raise HTTPException(422,str(exc))
  return app
