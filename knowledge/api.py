@@ -1,4 +1,10 @@
 from fastapi import FastAPI,Depends,HTTPException,Header
+from pydantic import BaseModel,constr
+
+class AskRequest(BaseModel):
+ question: constr(min_length=1,max_length=1000)
+ mode: str = "lexical"
+
 from .auth import AuthError,OIDCVerifier
 from .settings import Settings
 
@@ -21,4 +27,9 @@ def create_app(hub,verifier=None):
  def search(q:str,mode:str="lexical",limit:int=5,p=Depends(principal)):
   try:return {"hits":hub.search(p,q,mode,limit)}
   except ValueError as exc:raise HTTPException(422,str(exc))
+ @app.post("/api/ask")
+ def ask(body:AskRequest,p=Depends(principal)):
+  try:return hub.ask(p,body.question,body.mode)
+  except ValueError as exc:raise HTTPException(422,str(exc))
+  except RuntimeError:raise HTTPException(503,"Answer model is temporarily unavailable. Search sources or try again.")
  return app
