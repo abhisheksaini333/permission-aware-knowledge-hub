@@ -6,6 +6,7 @@ class AskRequest(BaseModel):
  mode: str = "lexical"
 
 from .auth import AuthError,OIDCVerifier
+from .identity import allowed
 from .settings import Settings
 
 def create_app(hub,verifier=None):
@@ -32,4 +33,8 @@ def create_app(hub,verifier=None):
   try:return hub.ask(p,body.question,body.mode)
   except ValueError as exc:raise HTTPException(422,str(exc))
   except RuntimeError:raise HTTPException(503,"Answer model is temporarily unavailable. Search sources or try again.")
+ @app.get("/api/documents")
+ def documents(p=Depends(principal)):
+  docs=hub.store.documents(p.tenant)
+  return {"documents":[{k:v for k,v in d.items() if k!="content"} for d in docs if p.is_admin or (not d["deleted"] and allowed(p,d["tenant"],d["groups"]))]}
  return app
