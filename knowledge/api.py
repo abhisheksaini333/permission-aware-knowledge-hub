@@ -37,4 +37,9 @@ def create_app(hub,verifier=None):
  def documents(p=Depends(principal)):
   docs=hub.store.documents(p.tenant)
   return {"documents":[{k:v for k,v in d.items() if k!="content"} for d in docs if p.is_admin or (not d["deleted"] and allowed(p,d["tenant"],d["groups"]))]}
+ @app.get("/api/documents/{key}/revisions/{revision}")
+ def revision(key:str,revision:int,p=Depends(principal)):
+  current=hub.store.document(key);old=hub.store.revision(key,revision)
+  if not current or current["deleted"] or not old or not allowed(p,current["tenant"],current["groups"]) or not allowed(p,old["tenant"],old["groups"]):raise HTTPException(404,"Source unavailable")
+  return old
  return app
