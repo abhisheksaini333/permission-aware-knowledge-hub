@@ -1,5 +1,11 @@
 from fastapi import FastAPI,Depends,HTTPException,Header
-from pydantic import BaseModel,constr
+from pydantic import BaseModel,constr,conlist
+
+class DocumentRequest(BaseModel):
+ source: constr(min_length=1,max_length=240)
+ title: constr(min_length=1,max_length=200)
+ content: constr(min_length=1,max_length=1000000)
+ groups: conlist(constr(min_length=1,max_length=80),max_items=30) = []
 
 class AskRequest(BaseModel):
  question: constr(min_length=1,max_length=1000)
@@ -42,4 +48,10 @@ def create_app(hub,verifier=None):
   current=hub.store.document(key);old=hub.store.revision(key,revision)
   if not current or current["deleted"] or not old or not allowed(p,current["tenant"],current["groups"]) or not allowed(p,old["tenant"],old["groups"]):raise HTTPException(404,"Source unavailable")
   return old
+ @app.post("/api/documents",status_code=201)
+ def ingest(body:DocumentRequest,p=Depends(admin)):
+  from .content import normalize
+  try:content=normalize(body.content.encode())
+  except ValueError as exc:raise HTTPException(422,str(exc))
+  return hub.store.ingest(p.tenant,body.source,body.title,content,body.groups)
  return app
