@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Depends,HTTPException,Header
+from fastapi import FastAPI,Depends,HTTPException,Header,UploadFile,File,Form
 from pydantic import BaseModel,constr,conlist
 
 class DocumentRequest(BaseModel):
@@ -54,4 +54,13 @@ def create_app(hub,verifier=None):
   try:content=normalize(body.content.encode())
   except ValueError as exc:raise HTTPException(422,str(exc))
   return hub.store.ingest(p.tenant,body.source,body.title,content,body.groups)
+ @app.post("/api/upload",status_code=201)
+ async def upload(file:UploadFile=File(...),groups:str=Form(""),title:str=Form(""),p=Depends(admin)):
+  from .formats import extract
+  payload=await file.read(settings.max_document_bytes+1)
+  try:
+   content=extract(file.filename or "",payload,settings.max_document_bytes)
+   body=DocumentRequest(source=file.filename or "",title=title or file.filename,content=content,groups=[g.strip() for g in groups.split(",") if g.strip()])
+  except ValueError as exc:raise HTTPException(422,str(exc))
+  return hub.store.ingest(p.tenant,body.source,body.title,body.content,body.groups)
  return app
