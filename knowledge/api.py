@@ -1,6 +1,10 @@
 from fastapi import FastAPI,Depends,HTTPException,Header,UploadFile,File,Form,Response
 from pydantic import BaseModel,constr,conlist
 
+class MembershipRequest(BaseModel):
+ groups: conlist(constr(min_length=1,max_length=80),max_items=30)
+ roles: conlist(constr(regex="^(reader|admin)$"),max_items=2)
+
 class DocumentRequest(BaseModel):
  source: constr(min_length=1,max_length=240)
  title: constr(min_length=1,max_length=200)
@@ -67,4 +71,9 @@ def create_app(hub,verifier=None):
  def delete(key:str,p=Depends(admin)):
   if not hub.store.delete(key,p.tenant):raise HTTPException(404,"Document not found")
   return Response(status_code=204)
+ @app.put("/api/memberships/{subject}")
+ def membership(subject:str,body:MembershipRequest,p=Depends(admin)):
+  if not 1<=len(subject)<=200:raise HTTPException(422,"Invalid subject")
+  hub.store.set_membership(p.tenant,subject,body.groups,body.roles)
+  return {"status":"updated"}
  return app
