@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Depends,HTTPException,Header,UploadFile,File,Form
+from fastapi import FastAPI,Depends,HTTPException,Header,UploadFile,File,Form,Response
 from pydantic import BaseModel,constr,conlist
 
 class DocumentRequest(BaseModel):
@@ -63,4 +63,8 @@ def create_app(hub,verifier=None):
    body=DocumentRequest(source=file.filename or "",title=title or file.filename,content=content,groups=[g.strip() for g in groups.split(",") if g.strip()])
   except ValueError as exc:raise HTTPException(422,str(exc))
   return hub.store.ingest(p.tenant,body.source,body.title,body.content,body.groups)
+ @app.delete("/api/documents/{key}",status_code=204)
+ def delete(key:str,p=Depends(admin)):
+  if not hub.store.delete(key,p.tenant):raise HTTPException(404,"Document not found")
+  return Response(status_code=204)
  return app
