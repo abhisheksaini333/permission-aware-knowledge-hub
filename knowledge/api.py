@@ -76,4 +76,6 @@ def create_app(hub,verifier=None):
   if not 1<=len(subject)<=200:raise HTTPException(422,"Invalid subject")
   hub.store.set_membership(p.tenant,subject,body.groups,body.roles)
   return {"status":"updated"}
+ @app.get("/api/jobs")
+ def jobs(p=Depends(admin)):return {"jobs":hub.store.jobs(p.tenant)}
  return app
