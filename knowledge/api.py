@@ -1,6 +1,11 @@
 from fastapi import FastAPI,Depends,HTTPException,Header,UploadFile,File,Form,Response
 from pydantic import BaseModel,constr,conlist
 
+class FeedbackRequest(BaseModel):
+ question: constr(min_length=1,max_length=1000)
+ rating: constr(regex="^(helpful|incorrect|missing_source)$")
+ comment: constr(max_length=1000) = ""
+
 class MembershipRequest(BaseModel):
  groups: conlist(constr(min_length=1,max_length=80),max_items=30)
  roles: conlist(constr(regex="^(reader|admin)$"),max_items=2)
@@ -78,4 +83,8 @@ def create_app(hub,verifier=None):
   return {"status":"updated"}
  @app.get("/api/jobs")
  def jobs(p=Depends(admin)):return {"jobs":hub.store.jobs(p.tenant)}
+ @app.post("/api/feedback",status_code=201)
+ def feedback(body:FeedbackRequest,p=Depends(principal)):
+  from .content import content_digest
+  return {"id":hub.store.feedback(p.tenant,p.subject,content_digest(body.question),body.rating,body.comment)}
  return app
