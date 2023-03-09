@@ -10,6 +10,8 @@ class Store:
   self.db.row_factory=sqlite3.Row;self.lock=threading.RLock()
   self.db.execute("PRAGMA foreign_keys=ON")
   self.db.execute("PRAGMA journal_mode=WAL")
+  self._schema()
+ def _schema(self):
   self.db.executescript("""
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS feedback(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
