@@ -59,10 +59,11 @@ class Store:
   with self.transaction():
    doc=self.document(key)
    if not doc or doc["deleted"] or doc["revision"]!=revision:return False
-   self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,))
+   self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,));self._remove_vectors(key)
    for i,chunk in enumerate(chunks):
     c=dict(chunk,id=f"{key}:{revision}:{i}",document_id=key,revision=revision,tenant=doc["tenant"])
     self.db.execute("INSERT INTO chunks VALUES(?,?,?,?)",(c["id"],key,doc["tenant"],json.dumps(c)))
+   self._index_vectors(doc,chunks)
    doc["status"]="ready";self._save(doc)
   return True
  def chunks(self,tenant):
@@ -76,7 +77,7 @@ class Store:
    if not doc or doc["tenant"]!=tenant:return False
    if doc["deleted"]:return True
    doc.update(deleted=True,status="deleted",content="",revision=doc["revision"]+1)
-   self._save(doc);self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,))
+   self._save(doc);self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,));self._remove_vectors(key)
   return True
 
  def jobs(self,tenant):
@@ -136,3 +137,6 @@ class Store:
   return key
  def feedback_records(self,tenant):
   with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM feedback WHERE tenant=?",(tenant,))]
+
+ def _remove_vectors(self,key):pass
+ def _index_vectors(self,doc,chunks):pass

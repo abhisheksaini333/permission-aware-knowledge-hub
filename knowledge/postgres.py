@@ -20,3 +20,11 @@ class Connection:
 class PostgresStore(Store):
  def __init__(self,url,schema="public"):
   self.db=Connection(url,schema);self.lock=threading.RLock();self._schema()
+  self.db.execute("CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public")
+  self.db.execute("CREATE TABLE IF NOT EXISTS vectors(id TEXT PRIMARY KEY,document_id TEXT NOT NULL,tenant TEXT NOT NULL,revision INTEGER NOT NULL,embedding vector(384) NOT NULL)")
+
+ def _remove_vectors(self,key):self.db.execute("DELETE FROM vectors WHERE document_id=?",(key,))
+ def _index_vectors(self,doc,chunks):
+  for i,c in enumerate(chunks):
+   if "vector" in c:
+    self.db.execute("INSERT INTO vectors VALUES(?,?,?,?,?::vector)",(f"{doc['id']}:{doc['revision']}:{i}",doc["id"],doc["tenant"],doc["revision"],str(c["vector"])))
