@@ -28,3 +28,20 @@ class PostgresStore(Store):
   for i,c in enumerate(chunks):
    if "vector" in c:
     self.db.execute("INSERT INTO vectors VALUES(?,?,?,?,?::vector)",(f"{doc['id']}:{doc['revision']}:{i}",doc["id"],doc["tenant"],doc["revision"],str(c["vector"])))
+
+ def vector_search(self,principal,vector,limit=20):
+  import json
+  from .retrieval import cosine
+  cosine(vector,vector)
+  if len(vector)!=384:raise ValueError("Expected a 384-dimensional MiniLM vector")
+  p=self.resolve(principal)
+  query="""SELECT c.body,1-(v.embedding <=> ?::vector) AS score
+  FROM vectors v JOIN chunks c ON c.id=v.id JOIN documents d ON d.id=v.document_id
+  WHERE v.tenant=? AND NOT (d.body::jsonb->>'deleted')::boolean
+  AND v.revision=(d.body::jsonb->>'revision')::integer AND d.body::jsonb->>'status'='ready'
+  AND (jsonb_array_length(d.body::jsonb->'groups')=0 OR EXISTS (
+   SELECT 1 FROM jsonb_array_elements_text(d.body::jsonb->'groups') g WHERE g=ANY(?::text[])))
+  ORDER BY v.embedding <=> ?::vector,v.id LIMIT ?"""
+  with self.lock:
+   rows=self.db.execute(query,(str(vector),p.tenant,list(p.groups),str(vector),limit)).fetchall()
+   return [(json.loads(body),float(score)) for body,score in rows]
