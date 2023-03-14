@@ -140,3 +140,12 @@ class Store:
 
  def _remove_vectors(self,key):pass
  def _index_vectors(self,doc,chunks):pass
+
+ def reindex(self,key,tenant):
+  with self.transaction():
+   doc=self.document(key)
+   if not doc or doc["tenant"]!=tenant or doc["deleted"]:return False
+   jobid=f"{key}:{doc['revision']}"
+   job=dict(id=jobid,document_id=key,tenant=tenant,revision=doc["revision"],status="pending",attempts=0,available_at=0,lease_until=0,owner=None,error=None)
+   self._save_job(job);doc["status"]="pending";self._save(doc)
+  return True
