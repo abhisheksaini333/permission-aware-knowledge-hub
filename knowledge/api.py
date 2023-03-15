@@ -87,4 +87,8 @@ def create_app(hub,verifier=None):
  def feedback(body:FeedbackRequest,p=Depends(principal)):
   from .content import content_digest
   return {"id":hub.store.feedback(p.tenant,p.subject,content_digest(body.question),body.rating,body.comment)}
+ @app.post("/api/documents/{key}/reindex",status_code=202)
+ def reindex(key:str,p=Depends(admin)):
+  if not hub.store.reindex(key,p.tenant):raise HTTPException(404,"Document unavailable")
+  return {"status":"pending"}
  return app
