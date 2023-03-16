@@ -1,6 +1,9 @@
 from fastapi import FastAPI,Depends,HTTPException,Header,UploadFile,File,Form,Response
 from pydantic import BaseModel,constr,conlist
 
+class AccessRequest(BaseModel):
+ groups: conlist(constr(min_length=1,max_length=80),max_items=30)
+
 class FeedbackRequest(BaseModel):
  question: constr(min_length=1,max_length=1000)
  rating: constr(regex="^(helpful|incorrect|missing_source)$")
@@ -91,4 +94,9 @@ def create_app(hub,verifier=None):
  def reindex(key:str,p=Depends(admin)):
   if not hub.store.reindex(key,p.tenant):raise HTTPException(404,"Document unavailable")
   return {"status":"pending"}
+ @app.put("/api/documents/{key}/access")
+ def access(key:str,body:AccessRequest,p=Depends(admin)):
+  d=hub.store.document(key)
+  if not d or d["tenant"]!=p.tenant or d["deleted"]:raise HTTPException(404,"Document unavailable")
+  return hub.store.ingest(p.tenant,d["source"],d["title"],d["content"],body.groups)
  return app
