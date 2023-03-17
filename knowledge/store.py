@@ -14,6 +14,7 @@ class Store:
  def _schema(self):
   self.db.executescript("""
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,created REAL NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS feedback(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS cache(tenant TEXT,key TEXT,expires REAL NOT NULL,body TEXT NOT NULL,PRIMARY KEY(tenant,key));
   CREATE TABLE IF NOT EXISTS memberships(tenant TEXT,subject TEXT,body TEXT NOT NULL,PRIMARY KEY(tenant,subject));
@@ -149,3 +150,10 @@ class Store:
    job=dict(id=jobid,document_id=key,tenant=tenant,revision=doc["revision"],status="pending",attempts=0,available_at=0,lease_until=0,owner=None,error=None)
    self._save_job(job);doc["status"]="pending";self._save(doc)
   return True
+
+ def audit(self,tenant,subject,action,details):
+  import uuid
+  key=str(uuid.uuid4());event=dict(id=key,subject=subject,action=action,details=details)
+  with self.transaction():self.db.execute("INSERT INTO audit VALUES(?,?,?,?)",(key,tenant,time.time(),json.dumps(event)))
+ def audit_events(self,tenant,limit=100):
+  with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM audit WHERE tenant=? ORDER BY created DESC LIMIT ?",(tenant,limit))]
