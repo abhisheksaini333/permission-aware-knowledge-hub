@@ -78,11 +78,13 @@ def create_app(hub,verifier=None):
  @app.delete("/api/documents/{key}",status_code=204)
  def delete(key:str,p=Depends(admin)):
   if not hub.store.delete(key,p.tenant):raise HTTPException(404,"Document not found")
+  hub.store.audit(p.tenant,p.subject,"document.deleted",{"document_id":key})
   return Response(status_code=204)
  @app.put("/api/memberships/{subject}")
  def membership(subject:str,body:MembershipRequest,p=Depends(admin)):
   if not 1<=len(subject)<=200:raise HTTPException(422,"Invalid subject")
   hub.store.set_membership(p.tenant,subject,body.groups,body.roles)
+  hub.store.audit(p.tenant,p.subject,"membership.changed",{"subject":subject})
   return {"status":"updated"}
  @app.get("/api/jobs")
  def jobs(p=Depends(admin)):return {"jobs":hub.store.jobs(p.tenant)}
@@ -99,4 +101,6 @@ def create_app(hub,verifier=None):
   d=hub.store.document(key)
   if not d or d["tenant"]!=p.tenant or d["deleted"]:raise HTTPException(404,"Document unavailable")
   return hub.store.ingest(p.tenant,d["source"],d["title"],d["content"],body.groups)
+ @app.get("/api/audit")
+ def audit(p=Depends(admin)):return {"events":hub.store.audit_events(p.tenant)}
  return app

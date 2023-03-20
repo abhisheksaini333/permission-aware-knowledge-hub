@@ -12,4 +12,4 @@ def client(generator=None):
  return TestClient(app),s
 
 def headers(tenant="acme",admin=False,groups=None):
- return {"Authorization":"Bearer "+token(tenant=tenant,groups=groups or [],realm_access={"roles":["admin" if admin else "reader"]})}
+ return {"Authorization":"Bearer "+token(sub="administrator" if admin else "reader",tenant=tenant,groups=groups or [],realm_access={"roles":["admin" if admin else "reader"]})}
