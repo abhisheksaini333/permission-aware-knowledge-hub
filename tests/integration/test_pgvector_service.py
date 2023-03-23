@@ -7,6 +7,7 @@ class Encoder:
 
 def test_service_dense_retrieval_uses_persisted_vectors(pgstore):
  s=pgstore;s.ingest("a","x","X","support hours",[]);IndexWorker(s,Encoder()).once()
+ s.db.execute("UPDATE chunks SET body=(body::jsonb - 'vector')::text")
  p=Principal("u","a",frozenset(),frozenset({"reader"}))
  out=KnowledgeHub(s,Encoder()).search(p,"support","dense")
  assert len(out)==1 and out[0]["score"]>.99

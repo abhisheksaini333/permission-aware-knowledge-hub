@@ -16,7 +16,8 @@ class KnowledgeHub:
   if mode=="lexical":ranking=lex
   else:
    if not self.encoder:raise ValueError("Dense model is unavailable")
-   vec=dense(self.encoder.encode([query])[0],chunks)
+   query_vector=self.encoder.encode([query])[0]
+   vec=self.store.vector_search(principal,query_vector,20) if hasattr(self.store,"vector_search") else dense(query_vector,chunks)
    ranking=vec if mode=="dense" else fuse(lex,vec)
    if mode=="rerank":ranking=rerank(query,ranking)
   return [dict(c,score=score,title=self.store.document(c["document_id"])["title"],source=self.store.document(c["document_id"])["source"]) for c,score in ranking[:limit]]
