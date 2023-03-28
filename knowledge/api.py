@@ -31,9 +31,22 @@ def create_app(hub,verifier=None):
  settings=Settings.from_env();verifier=verifier or OIDCVerifier(settings.issuer,settings.audience)
  app=FastAPI(title="Permission-aware Knowledge Hub",version="0.1.0")
  app.state.hub=hub
+ from .limits import RateLimiter
+ limiter=RateLimiter()
+ @app.middleware("http")
+ async def security_headers(request,call_next):
+  response=await call_next(request)
+  response.headers["X-Content-Type-Options"]="nosniff"
+  response.headers["X-Frame-Options"]="DENY"
+  response.headers["Referrer-Policy"]="same-origin"
+  response.headers["Cache-Control"]="no-store"
+  return response
  def principal(authorization: str = Header(default="")):
   if not authorization.startswith("Bearer "):raise HTTPException(401,"Sign in to continue",headers={"WWW-Authenticate":"Bearer"})
-  try:return hub.store.resolve(verifier.verify(authorization[7:]))
+  try:p=hub.store.resolve(verifier.verify(authorization[7:]))
+  except AuthError:raise HTTPException(401,"Session expired or invalid",headers={"WWW-Authenticate":"Bearer"})
+  if not limiter.allow((p.tenant,p.subject)):raise HTTPException(429,"Too many requests; try again shortly",headers={"Retry-After":"60"})
+  try:return p
   except AuthError:raise HTTPException(401,"Session expired or invalid",headers={"WWW-Authenticate":"Bearer"})
  def admin(p=Depends(principal)):
   if not p.is_admin:raise HTTPException(403,"Administrator access required")
