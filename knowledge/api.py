@@ -116,4 +116,6 @@ def create_app(hub,verifier=None):
   return hub.store.ingest(p.tenant,d["source"],d["title"],d["content"],body.groups)
  @app.get("/api/audit")
  def audit(p=Depends(admin)):return {"events":hub.store.audit_events(p.tenant)}
+ @app.get("/api/config")
+ def config():return dict(issuer=settings.issuer,client_id="knowledge-ui",dense_available=hub.encoder is not None,answers_available=hub.generator is not None)
  return app
