@@ -45,6 +45,7 @@ def create_app(hub,verifier=None):
   if not authorization.startswith("Bearer "):raise HTTPException(401,"Sign in to continue",headers={"WWW-Authenticate":"Bearer"})
   try:p=hub.store.resolve(verifier.verify(authorization[7:]))
   except AuthError:raise HTTPException(401,"Session expired or invalid",headers={"WWW-Authenticate":"Bearer"})
+  if not {"reader","admin"}.intersection(p.roles):raise HTTPException(403,"Application access has been revoked")
   if not limiter.allow((p.tenant,p.subject)):raise HTTPException(429,"Too many requests; try again shortly",headers={"Retry-After":"60"})
   try:return p
   except AuthError:raise HTTPException(401,"Session expired or invalid",headers={"WWW-Authenticate":"Bearer"})
