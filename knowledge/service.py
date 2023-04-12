@@ -20,7 +20,8 @@ class KnowledgeHub:
    vec=self.store.vector_search(principal,query_vector,20) if hasattr(self.store,"vector_search") else dense(query_vector,chunks)
    ranking=vec if mode=="dense" else fuse(lex,vec)
    if mode=="rerank":ranking=rerank(query,ranking)
-  return [dict(c,score=score,title=self.store.document(c["document_id"])["title"],source=self.store.document(c["document_id"])["source"]) for c,score in ranking[:limit]]
+  valid={c["id"] for c in self.visible_chunks(principal)}
+  return [dict(c,score=score,title=self.store.document(c["document_id"])["title"],source=self.store.document(c["document_id"])["source"]) for c,score in ranking if c["id"] in valid][:limit]
 
  def ask(self,principal,question,mode="lexical"):
   from .answers import build_prompt,citations,supported
