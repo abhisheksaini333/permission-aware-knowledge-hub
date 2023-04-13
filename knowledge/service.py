@@ -31,7 +31,13 @@ class KnowledgeHub:
   signature=dict(subject=principal.subject,groups=sorted(effective.groups),roles=sorted(effective.roles),chunks=[c["id"] for c in self.visible_chunks(principal)],question=question,mode=mode)
   cache_key=content_digest(json.dumps(signature,sort_keys=True))
   cached=self.store.cache_get(principal.tenant,cache_key)
-  if cached:return dict(cached,cached=True)
+  if cached:
+   p=self.store.resolve(principal)
+   valid=True
+   for cite in cached["citations"]:
+    d=self.store.document(cite["document_id"])
+    if not d or d["deleted"] or d["revision"]!=cite["revision"] or not allowed(p,d["tenant"],d["groups"]):valid=False
+   if valid:return dict(cached,cached=True)
   hits=self.search(principal,question,mode,limit=3)
   prompt,used=build_prompt(question,hits)
   if not used or not self.generator:return dict(answer="No supported answer is available.",abstained=True,citations=[],cached=False)
