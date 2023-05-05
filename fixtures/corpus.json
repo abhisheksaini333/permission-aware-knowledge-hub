@@ -1,0 +1,376 @@
+{
+  "description": "Original synthetic company policies and fixed labeled questions. No customer records. Calibration labels remain separate from held-out reporting.",
+  "documents": [
+    {
+      "tenant": "acme",
+      "source": "operations.md",
+      "title": "Resilience manual",
+      "content": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+      "groups": [
+        "staff"
+      ]
+    },
+    {
+      "tenant": "acme",
+      "source": "people.md",
+      "title": "Employee handbook",
+      "content": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+      "groups": [
+        "staff"
+      ]
+    },
+    {
+      "tenant": "acme",
+      "source": "support.md",
+      "title": "Customer support guide",
+      "content": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+      "groups": []
+    },
+    {
+      "tenant": "acme",
+      "source": "finance.md",
+      "title": "Acquisition review",
+      "content": "Acme acquisition planning is restricted to the finance group. The acquisition budget is forty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is ACME-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+      "groups": [
+        "finance"
+      ]
+    },
+    {
+      "tenant": "beta",
+      "source": "operations.md",
+      "title": "Resilience manual",
+      "content": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+      "groups": [
+        "staff"
+      ]
+    },
+    {
+      "tenant": "beta",
+      "source": "people.md",
+      "title": "Employee handbook",
+      "content": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+      "groups": [
+        "staff"
+      ]
+    },
+    {
+      "tenant": "beta",
+      "source": "support.md",
+      "title": "Customer support guide",
+      "content": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+      "groups": []
+    },
+    {
+      "tenant": "beta",
+      "source": "finance.md",
+      "title": "Acquisition review",
+      "content": "Beta acquisition planning is restricted to the finance group. The acquisition budget is twenty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is BETA-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+      "groups": [
+        "finance"
+      ]
+    },
+    {
+      "tenant": "cobalt",
+      "source": "operations.md",
+      "title": "Resilience manual",
+      "content": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+      "groups": [
+        "staff"
+      ]
+    },
+    {
+      "tenant": "cobalt",
+      "source": "people.md",
+      "title": "Employee handbook",
+      "content": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+      "groups": [
+        "staff"
+      ]
+    },
+    {
+      "tenant": "cobalt",
+      "source": "support.md",
+      "title": "Customer support guide",
+      "content": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+      "groups": []
+    },
+    {
+      "tenant": "cobalt",
+      "source": "finance.md",
+      "title": "Acquisition review",
+      "content": "Cobalt acquisition planning is restricted to the finance group. The acquisition budget is sixty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is COBALT-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+      "groups": [
+        "finance"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "acme-retention",
+      "tenant": "acme",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "How long are database backups retained?",
+      "source": "operations.md",
+      "answer": "seven days",
+      "split": "heldout"
+    },
+    {
+      "id": "acme-region",
+      "tenant": "acme",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "Where are encrypted backups stored?",
+      "source": "operations.md",
+      "answer": "Dublin",
+      "split": "heldout"
+    },
+    {
+      "id": "acme-reimbursement",
+      "tenant": "acme",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "Who approves expense reimbursements?",
+      "source": "people.md",
+      "answer": "team lead",
+      "split": "heldout"
+    },
+    {
+      "id": "acme-priority",
+      "tenant": "acme",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "How quickly must a priority incident receive an initial response?",
+      "source": "support.md",
+      "answer": "two hours",
+      "split": "heldout"
+    },
+    {
+      "id": "acme-finance",
+      "tenant": "acme",
+      "groups": [
+        "staff",
+        "finance"
+      ],
+      "role": "admin",
+      "question": "What is the acquisition budget?",
+      "source": "finance.md",
+      "answer": "forty million euros",
+      "split": "heldout"
+    },
+    {
+      "id": "acme-forbidden",
+      "tenant": "acme",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "What is the acquisition budget?",
+      "source": null,
+      "answer": null,
+      "split": "heldout"
+    },
+    {
+      "id": "acme-release",
+      "tenant": "acme",
+      "groups": [
+        "staff"
+      ],
+      "role": "admin",
+      "question": "Who approves production deployments?",
+      "source": "operations.md",
+      "answer": "release manager",
+      "split": "calibration"
+    },
+    {
+      "id": "beta-retention",
+      "tenant": "beta",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "How long are database backups retained?",
+      "source": "operations.md",
+      "answer": "fourteen days",
+      "split": "heldout"
+    },
+    {
+      "id": "beta-region",
+      "tenant": "beta",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "Where are encrypted backups stored?",
+      "source": "operations.md",
+      "answer": "Frankfurt",
+      "split": "heldout"
+    },
+    {
+      "id": "beta-reimbursement",
+      "tenant": "beta",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "Who approves expense reimbursements?",
+      "source": "people.md",
+      "answer": "team lead",
+      "split": "heldout"
+    },
+    {
+      "id": "beta-priority",
+      "tenant": "beta",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "How quickly must a priority incident receive an initial response?",
+      "source": "support.md",
+      "answer": "two hours",
+      "split": "heldout"
+    },
+    {
+      "id": "beta-finance",
+      "tenant": "beta",
+      "groups": [
+        "staff",
+        "finance"
+      ],
+      "role": "admin",
+      "question": "What is the acquisition budget?",
+      "source": "finance.md",
+      "answer": "twenty million euros",
+      "split": "heldout"
+    },
+    {
+      "id": "beta-forbidden",
+      "tenant": "beta",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "What is the acquisition budget?",
+      "source": null,
+      "answer": null,
+      "split": "heldout"
+    },
+    {
+      "id": "beta-release",
+      "tenant": "beta",
+      "groups": [
+        "staff"
+      ],
+      "role": "admin",
+      "question": "Who approves production deployments?",
+      "source": "operations.md",
+      "answer": "release manager",
+      "split": "calibration"
+    },
+    {
+      "id": "cobalt-retention",
+      "tenant": "cobalt",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "How long are database backups retained?",
+      "source": "operations.md",
+      "answer": "thirty days",
+      "split": "heldout"
+    },
+    {
+      "id": "cobalt-region",
+      "tenant": "cobalt",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "Where are encrypted backups stored?",
+      "source": "operations.md",
+      "answer": "Paris",
+      "split": "heldout"
+    },
+    {
+      "id": "cobalt-reimbursement",
+      "tenant": "cobalt",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "Who approves expense reimbursements?",
+      "source": "people.md",
+      "answer": "team lead",
+      "split": "heldout"
+    },
+    {
+      "id": "cobalt-priority",
+      "tenant": "cobalt",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "How quickly must a priority incident receive an initial response?",
+      "source": "support.md",
+      "answer": "two hours",
+      "split": "heldout"
+    },
+    {
+      "id": "cobalt-finance",
+      "tenant": "cobalt",
+      "groups": [
+        "staff",
+        "finance"
+      ],
+      "role": "admin",
+      "question": "What is the acquisition budget?",
+      "source": "finance.md",
+      "answer": "sixty million euros",
+      "split": "heldout"
+    },
+    {
+      "id": "cobalt-forbidden",
+      "tenant": "cobalt",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "What is the acquisition budget?",
+      "source": null,
+      "answer": null,
+      "split": "heldout"
+    },
+    {
+      "id": "cobalt-release",
+      "tenant": "cobalt",
+      "groups": [
+        "staff"
+      ],
+      "role": "admin",
+      "question": "Who approves production deployments?",
+      "source": "operations.md",
+      "answer": "release manager",
+      "split": "calibration"
+    },
+    {
+      "id": "unknown-astronomy",
+      "tenant": "acme",
+      "groups": [
+        "staff"
+      ],
+      "role": "reader",
+      "question": "How many moons orbit Jupiter?",
+      "source": null,
+      "answer": null,
+      "split": "heldout"
+    }
+  ]
+}
