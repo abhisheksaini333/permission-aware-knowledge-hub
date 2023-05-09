@@ -15,3 +15,6 @@ def supported(answer,hits):
  if not answer.strip() or answer.strip().upper() in {"UNKNOWN","I DON'T KNOW","NOT ENOUGH INFORMATION"}:return False
  words=set(tokens(answer));evidence=set(tokens(" ".join(h["text"] for h in hits)))
  return bool(words) and len(words&evidence)/len(words)>=.8
+
+def supporting_hits(answer,hits):
+ return [h for h in hits if supported(answer,[h])]

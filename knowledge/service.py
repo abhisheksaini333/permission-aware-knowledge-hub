@@ -24,7 +24,7 @@ class KnowledgeHub:
   return [dict(c,score=score,title=self.store.document(c["document_id"])["title"],source=self.store.document(c["document_id"])["source"]) for c,score in ranking if c["id"] in valid][:limit]
 
  def ask(self,principal,question,mode="lexical"):
-  from .answers import build_prompt,citations,supported
+  from .answers import build_prompt,citations,supported,supporting_hits
   import json
   from .content import content_digest
   effective=self.store.resolve(principal)
@@ -44,7 +44,8 @@ class KnowledgeHub:
   answer=self.generator.generate(prompt).strip()
   valid={c["id"] for c in self.visible_chunks(principal)}
   if any(h["id"] not in valid for h in used):return dict(answer="Evidence changed while answering. Please try again.",abstained=True,citations=[],cached=False)
-  if not supported(answer,used):return dict(answer="The available evidence does not support a reliable answer.",abstained=True,citations=[],cached=False)
+  used=supporting_hits(answer,used)
+  if not used:return dict(answer="The available evidence does not support a reliable answer.",abstained=True,citations=[],cached=False)
   result=dict(answer=answer,abstained=False,citations=citations(used),cached=False)
   self.store.cache_put(principal.tenant,cache_key,result)
   return result
