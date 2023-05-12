@@ -19,7 +19,10 @@ class IndexWorker:
    if self.encoder:
     vectors=self.encoder.encode([c["text"] for c in chunks])
     if len(vectors)!=len(chunks):raise ValueError("Embedding count mismatch")
-    for c,v in zip(chunks,vectors):c["vector"]=v
+    for c,v in zip(chunks,vectors):
+     import math
+     if len(v)!=384 or not all(math.isfinite(x) for x in v):raise ValueError("Invalid MiniLM embedding")
+     c["vector"]=v
    self.store.index(doc["id"],job["revision"],chunks)
    self.store.finish(job)
   except Exception as exc:self.store.finish(job,type(exc).__name__)
