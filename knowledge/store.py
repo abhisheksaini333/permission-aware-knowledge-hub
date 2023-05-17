@@ -163,3 +163,7 @@ class Store:
   with self.transaction():self.db.execute("INSERT INTO audit VALUES(?,?,?,?)",(key,tenant,time.time(),json.dumps(event)))
  def audit_events(self,tenant,limit=100):
   with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM audit WHERE tenant=? ORDER BY created DESC LIMIT ?",(tenant,limit))]
+
+ def prune_cache(self,now=None):
+  now=time.time() if now is None else now
+  with self.transaction():return self.db.execute("DELETE FROM cache WHERE expires<=?",(now,)).rowcount
