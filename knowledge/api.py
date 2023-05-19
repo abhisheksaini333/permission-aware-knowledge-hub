@@ -119,4 +119,10 @@ def create_app(hub,verifier=None):
  def audit(p=Depends(admin)):return {"events":hub.store.audit_events(p.tenant)}
  @app.get("/api/config")
  def config():return dict(issuer=settings.issuer,client_id="knowledge-ui",dense_available=hub.encoder is not None,answers_available=hub.generator is not None)
+ @app.get("/ready")
+ def readiness():
+  try:
+   with hub.store.lock:hub.store.db.execute("SELECT 1").fetchone()
+  except Exception:raise HTTPException(503,"Storage is unavailable")
+  return {"status":"ready","dense_available":hub.encoder is not None,"answers_available":hub.generator is not None}
  return app
