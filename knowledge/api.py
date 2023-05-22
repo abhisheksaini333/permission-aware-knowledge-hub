@@ -125,4 +125,8 @@ def create_app(hub,verifier=None):
    with hub.store.lock:hub.store.db.execute("SELECT 1").fetchone()
   except Exception:raise HTTPException(503,"Storage is unavailable")
   return {"status":"ready","dense_available":hub.encoder is not None,"answers_available":hub.generator is not None}
+ @app.get("/api/index-health")
+ def index_health(p=Depends(admin)):
+  docs=hub.store.documents(p.tenant);jobs=hub.store.jobs(p.tenant)
+  return dict(documents=len(docs),ready=sum(d["status"]=="ready" for d in docs),pending=sum(d["status"]=="pending" for d in docs),deleted=sum(d["deleted"] for d in docs),failed_jobs=sum(j["status"]=="failed" for j in jobs),chunks=len(hub.store.chunks(p.tenant)))
  return app
