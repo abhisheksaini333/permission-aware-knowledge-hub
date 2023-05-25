@@ -10,4 +10,4 @@ class Principal:
  def is_admin(self):return "admin" in self.roles
 
 def allowed(principal,tenant,groups):
- return principal.tenant == tenant and (not groups or bool(principal.groups.intersection(groups)))
+ return bool({"reader","admin"}.intersection(principal.roles)) and principal.tenant == tenant and (not groups or bool(principal.groups.intersection(groups)))
