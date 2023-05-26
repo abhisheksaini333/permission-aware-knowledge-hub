@@ -1,4 +1,4 @@
-import sqlite3,json,threading,time
+import sqlite3,json,threading,time,uuid
 from contextlib import contextmanager
 from pathlib import Path
 from .content import document_key,content_digest
@@ -47,7 +47,7 @@ class Store:
    revision=old["revision"]+1 if old else 1
    doc=dict(id=key,tenant=tenant,source=source,title=title,content=content,groups=sorted(set(groups)),revision=revision,digest=content_digest(content),deleted=False,status="pending")
    self._save(doc)
-   job=dict(id=f"{key}:{revision}",document_id=key,tenant=tenant,revision=revision,status="pending",attempts=0,available_at=0,lease_until=0,owner=None,error=None)
+   job=dict(id=f"{key}:{revision}",document_id=key,tenant=tenant,revision=revision,status="pending",attempts=0,available_at=0,lease_until=0,owner=None,lease_token=None,error=None)
    self.db.execute("INSERT INTO jobs VALUES(?,?,?)",(job["id"],tenant,json.dumps(job)))
    self.db.execute("INSERT INTO revisions VALUES(?,?,?)",(key,revision,json.dumps(doc)))
   return doc
@@ -56,8 +56,14 @@ class Store:
   with self.lock:
    return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM documents WHERE tenant=? ORDER BY id",(tenant,)).fetchall()]
 
- def index(self,key,revision,chunks):
+ def index(self,key,revision,chunks,job=None,now=None):
+  now=time.time() if now is None else now
   with self.transaction():
+   row=self.db.execute("SELECT body FROM jobs WHERE id=?",(f"{key}:{revision}",)).fetchone()
+   live=json.loads(row[0]) if row else None
+   if job is not None:
+    if not live or not self._owns_lease(live,job,now):return False
+   elif live and live["status"]=="running":return False
    doc=self.document(key)
    if not doc or doc["deleted"] or doc["revision"]!=revision:return False
    self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,));self._remove_vectors(key)
@@ -97,7 +103,7 @@ class Store:
       doc=self.document(j["document_id"])
       if doc and not doc["deleted"] and doc["revision"]==j["revision"]:doc["status"]="failed";self._save(doc)
       continue
-     j.update(status="running",owner=owner,attempts=j["attempts"]+1,lease_until=now+lease_seconds)
+     j.update(status="running",owner=owner,lease_token=uuid.uuid4().hex,attempts=j["attempts"]+1,lease_until=now+lease_seconds)
      self._save_job(j);return j
   return None
 
@@ -107,7 +113,7 @@ class Store:
    row=self.db.execute("SELECT body FROM jobs WHERE id=?",(job["id"],)).fetchone()
    if not row:return False
    live=json.loads(row[0])
-   if live["status"]!="running" or live["owner"]!=job["owner"] or live["attempts"]!=job["attempts"]:return False
+   if not self._owns_lease(live,job,now):return False
    status="succeeded" if not error else ("failed" if live["attempts"]>=max_attempts else "pending")
    live.update(status=status,error=error,available_at=now+min(60,2**live["attempts"]),lease_until=0)
    self._save_job(live)
@@ -153,7 +159,7 @@ class Store:
    doc=self.document(key)
    if not doc or doc["tenant"]!=tenant or doc["deleted"]:return False
    jobid=f"{key}:{doc['revision']}"
-   job=dict(id=jobid,document_id=key,tenant=tenant,revision=doc["revision"],status="pending",attempts=0,available_at=0,lease_until=0,owner=None,error=None)
+   job=dict(id=jobid,document_id=key,tenant=tenant,revision=doc["revision"],status="pending",attempts=0,available_at=0,lease_until=0,owner=None,lease_token=None,error=None)
    self._save_job(job);doc["status"]="pending";self._save(doc)
   return True
 
@@ -167,3 +173,7 @@ class Store:
  def prune_cache(self,now=None):
   now=time.time() if now is None else now
   with self.transaction():return self.db.execute("DELETE FROM cache WHERE expires<=?",(now,)).rowcount
+
+ @staticmethod
+ def _owns_lease(live,job,now):
+  return live["status"]=="running" and live["lease_until"]>now and live["owner"]==job["owner"] and live["attempts"]==job["attempts"] and live.get("lease_token")==job.get("lease_token")

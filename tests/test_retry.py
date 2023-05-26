@@ -13,4 +13,4 @@ def test_recovered_lease_rejects_previous_owner():
  s=Store();s.ingest("a","x","X","hello",[])
  old=s.claim("old",now=0,lease_seconds=1);new=s.claim("new",now=2)
  assert not s.finish(old)
- assert s.finish(new)
+ assert s.finish(new,now=3)

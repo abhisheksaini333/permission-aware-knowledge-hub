@@ -23,7 +23,7 @@ class IndexWorker:
      import math
      if len(v)!=384 or not all(math.isfinite(x) for x in v):raise ValueError("Invalid MiniLM embedding")
      c["vector"]=v
-   self.store.index(doc["id"],job["revision"],chunks)
+   self.store.index(doc["id"],job["revision"],chunks,job=job)
    self.store.finish(job)
   except Exception as exc:self.store.finish(job,type(exc).__name__)
   return True
