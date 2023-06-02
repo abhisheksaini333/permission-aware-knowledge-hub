@@ -17,9 +17,9 @@ def decode_token(token,key,issuer,audience):
  except (jwt.PyJWTError,ValueError,TypeError,KeyError) as exc:raise AuthError("Invalid or expired access token") from exc
 
 class OIDCVerifier:
- def __init__(self,issuer,audience):
+ def __init__(self,issuer,audience,jwks_url=None):
   self.issuer=issuer.rstrip("/");self.audience=audience
-  self.jwks=jwt.PyJWKClient(self.issuer+"/protocol/openid-connect/certs",cache_keys=True)
+  self.jwks=jwt.PyJWKClient(jwks_url or self.issuer+"/protocol/openid-connect/certs",cache_keys=True)
  def verify(self,token):
   try:key=self.jwks.get_signing_key_from_jwt(token).key
   except Exception as exc:raise AuthError("Unable to verify access token") from exc

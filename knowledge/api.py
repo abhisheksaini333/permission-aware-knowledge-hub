@@ -28,7 +28,8 @@ from .identity import allowed
 from .settings import Settings
 
 def create_app(hub,verifier=None):
- settings=Settings.from_env();verifier=verifier or OIDCVerifier(settings.issuer,settings.audience)
+ import os
+ settings=Settings.from_env();verifier=verifier or OIDCVerifier(settings.issuer,settings.audience,jwks_url=os.getenv("OIDC_JWKS_URL"))
  app=FastAPI(title="Permission-aware Knowledge Hub",version="0.1.0")
  app.state.hub=hub
  from .limits import RateLimiter
