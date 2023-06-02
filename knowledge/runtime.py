@@ -30,4 +30,9 @@ def application():
  def shutdown():
   stop.set();thread.join(timeout=10)
   if not thread.is_alive():hub.store.close()
+ mount_frontend(app,Path(__file__).resolve().parents[1]/"frontend"/"dist")
  return app
+
+def mount_frontend(app,directory):
+ from fastapi.staticfiles import StaticFiles
+ if Path(directory).is_dir():app.mount("/",StaticFiles(directory=str(directory),html=True),name="frontend")
