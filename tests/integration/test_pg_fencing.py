@@ -1,8 +1,9 @@
+import os
 from knowledge.postgres import PostgresStore
 
 def test_separate_connections_cannot_publish_stale_worker_results(pgstore):
  s=pgstore;schema=s.db.execute("SELECT current_schema()").fetchone()[0]
- other=PostgresStore(s.db.raw.dsn,schema=schema)
+ other=PostgresStore(os.environ["KNOWLEDGE_TEST_DATABASE"],schema=schema)
  try:
   d=s.ingest("a","lease.md","Lease","current",[])
   old=s.claim("old",now=0,lease_seconds=1);new=other.claim("new",now=2)
