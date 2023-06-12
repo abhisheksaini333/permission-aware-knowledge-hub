@@ -31,6 +31,8 @@ def create_app(hub,verifier=None):
  import os
  settings=Settings.from_env();verifier=verifier or OIDCVerifier(settings.issuer,settings.audience,jwks_url=os.getenv("OIDC_JWKS_URL"))
  app=FastAPI(title="Permission-aware Knowledge Hub",version="0.1.0")
+ from .http_limits import BodyLimit
+ app.add_middleware(BodyLimit)
  app.state.hub=hub
  from .limits import RateLimiter
  limiter=RateLimiter()
