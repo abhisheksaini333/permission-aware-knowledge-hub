@@ -1,0 +1,44 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: deploy/postgres.Dockerfile
+    environment:
+      POSTGRES_DB: knowledge
+      POSTGRES_USER: knowledge
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    ports: ["127.0.0.1:54383:5432"]
+    volumes: ["knowledge-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U knowledge -d knowledge"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  keycloak:
+    image: quay.io/keycloak/keycloak:18.0.2
+    platform: linux/amd64
+    command: ["start-dev", "--import-realm", "--hostname=localhost", "--hostname-port=8183", "--hostname-strict=false"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Set KEYCLOAK_ADMIN_PASSWORD}
+      JAVA_OPTS_APPEND: -Xms128m -Xmx384m
+    ports: ["127.0.0.1:8183:8080"]
+    volumes: ["./.runtime/realm.json:/opt/keycloak/data/import/realm.json:ro", "identity-data:/opt/keycloak/data"]
+  api:
+    build: .
+    platform: linux/amd64
+    environment:
+      DATABASE_URL: postgresql://knowledge:${POSTGRES_PASSWORD}@postgres:5432/knowledge
+      OIDC_ISSUER: http://localhost:8183/realms/knowledge
+      OIDC_JWKS_URL: http://keycloak:8080/realms/knowledge/protocol/openid-connect/certs
+      MODEL_CACHE: /models
+    ports: ["127.0.0.1:8083:8083"]
+    volumes: ["${MODEL_CACHE:?Set MODEL_CACHE}:/models:ro"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+volumes:
+  knowledge-data:
+  identity-data:
