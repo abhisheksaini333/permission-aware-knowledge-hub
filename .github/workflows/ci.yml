@@ -1,0 +1,42 @@
+name: Knowledge Hub checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v3.2.0
+      - uses: actions/setup-python@v4.4.0
+        with:
+          python-version: '3.10.9'
+      - uses: actions/setup-node@v3.5.1
+        with:
+          node-version: '18.12.1'
+      - name: Install pinned runtime
+        run: |
+          python -m pip install torch==1.13.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements.txt
+          python -m pip check
+      - name: Start actual PostgreSQL and pgvector
+        run: |
+          docker build -f deploy/postgres.Dockerfile -t knowledge-postgres:test .
+          password=$(openssl rand -hex 20)
+          echo "::add-mask::$password"
+          docker run -d --name knowledge-db -e POSTGRES_USER=knowledge -e POSTGRES_DB=knowledge -e POSTGRES_PASSWORD="$password" -p 54383:5432 knowledge-postgres:test
+          echo "KNOWLEDGE_TEST_DATABASE=postgresql://knowledge:$password@localhost:54383/knowledge" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 30); do
+            if docker exec knowledge-db pg_isready -U knowledge -d knowledge; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Test domain API security and PostgreSQL integration
+        run: python -m pytest tests -q
+      - name: Check browser contracts and production build
+        run: |
+          npm ci --prefix frontend
+          npm test --prefix frontend
+          npm run build --prefix frontend
+      - name: Check whitespace
+        run: git diff --check
