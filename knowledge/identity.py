@@ -1,13 +1,21 @@
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class Principal:
- subject: str
- tenant: str
- groups: frozenset[str]
- roles: frozenset[str]
- @property
- def is_admin(self):return "admin" in self.roles
+    subject: str
+    tenant: str
+    groups: frozenset[str]
+    roles: frozenset[str]
 
-def allowed(principal,tenant,groups):
- return bool({"reader","admin"}.intersection(principal.roles)) and principal.tenant == tenant and (not groups or bool(principal.groups.intersection(groups)))
+    @property
+    def is_admin(self):
+        return "admin" in self.roles
+
+
+def allowed(principal, tenant, groups):
+    return (
+        bool({"reader", "admin"}.intersection(principal.roles))
+        and principal.tenant == tenant
+        and (not groups or bool(principal.groups.intersection(groups)))
+    )

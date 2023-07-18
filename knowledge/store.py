@@ -1,18 +1,23 @@
-import sqlite3,json,threading,time,uuid
+import sqlite3, json, threading, time, uuid
 from contextlib import contextmanager
 from pathlib import Path
-from .content import document_key,content_digest
+from .content import document_key, content_digest
+
 
 class Store:
- def __init__(self,path=":memory:"):
-  if path!=":memory:":Path(path).parent.mkdir(parents=True,exist_ok=True)
-  self.db=sqlite3.connect(path,check_same_thread=False,isolation_level=None)
-  self.db.row_factory=sqlite3.Row;self.lock=threading.RLock()
-  self.db.execute("PRAGMA foreign_keys=ON")
-  self.db.execute("PRAGMA journal_mode=WAL")
-  self._schema()
- def _schema(self):
-  self.db.executescript("""
+    def __init__(self, path=":memory:"):
+        if path != ":memory:":
+            Path(path).parent.mkdir(parents=True, exist_ok=True)
+        self.db = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
+        self.db.row_factory = sqlite3.Row
+        self.lock = threading.RLock()
+        self.db.execute("PRAGMA foreign_keys=ON")
+        self.db.execute("PRAGMA journal_mode=WAL")
+        self._schema()
+
+    def _schema(self):
+        self.db.executescript(
+            """
   CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,created REAL NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS feedback(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
@@ -21,159 +26,388 @@ class Store:
   CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS chunks(id TEXT PRIMARY KEY,document_id TEXT NOT NULL,tenant TEXT NOT NULL,body TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS revisions(document_id TEXT,revision INTEGER,body TEXT NOT NULL,PRIMARY KEY(document_id,revision));
-  """)
- @contextmanager
- def transaction(self):
-  with self.lock:
-   self.db.execute("BEGIN IMMEDIATE")
-   try:yield;self.db.execute("COMMIT")
-   except BaseException:self.db.execute("ROLLBACK");raise
- def close(self):self.db.close()
- def document(self,key):
-  with self.lock:
-   row=self.db.execute("SELECT body FROM documents WHERE id=?",(key,)).fetchone()
-   return json.loads(row[0]) if row else None
- def revision(self,key,revision):
-  with self.lock:
-   row=self.db.execute("SELECT body FROM revisions WHERE document_id=? AND revision=?",(key,revision)).fetchone()
-   return json.loads(row[0]) if row else None
- def _save(self,doc):
-  self.db.execute("INSERT INTO documents(id,tenant,body) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET body=excluded.body",(doc["id"],doc["tenant"],json.dumps(doc)))
- def ingest(self,tenant,source,title,content,groups):
-  key=document_key(tenant,source)
-  with self.transaction():
-   old=self.document(key)
-   if old and not old["deleted"] and all(old[k]==v for k,v in dict(title=title,content=content,groups=sorted(set(groups))).items()):return old
-   revision=old["revision"]+1 if old else 1
-   doc=dict(id=key,tenant=tenant,source=source,title=title,content=content,groups=sorted(set(groups)),revision=revision,digest=content_digest(content),deleted=False,status="pending")
-   self._save(doc)
-   job=dict(id=f"{key}:{revision}",document_id=key,tenant=tenant,revision=revision,status="pending",attempts=0,available_at=0,lease_until=0,owner=None,lease_token=None,error=None)
-   self.db.execute("INSERT INTO jobs VALUES(?,?,?)",(job["id"],tenant,json.dumps(job)))
-   self.db.execute("INSERT INTO revisions VALUES(?,?,?)",(key,revision,json.dumps(doc)))
-  return doc
+  """
+        )
 
- def documents(self,tenant):
-  with self.lock:
-   return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM documents WHERE tenant=? ORDER BY id",(tenant,)).fetchall()]
+    @contextmanager
+    def transaction(self):
+        with self.lock:
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                yield
+                self.db.execute("COMMIT")
+            except BaseException:
+                self.db.execute("ROLLBACK")
+                raise
 
- def index(self,key,revision,chunks,job=None,now=None):
-  now=time.time() if now is None else now
-  with self.transaction():
-   row=self.db.execute("SELECT body FROM jobs WHERE id=?",(f"{key}:{revision}",)).fetchone()
-   live=json.loads(row[0]) if row else None
-   if job is not None:
-    if not live or not self._owns_lease(live,job,now):return False
-   elif live and live["status"]=="running":return False
-   doc=self.document(key)
-   if not doc or doc["deleted"] or doc["revision"]!=revision:return False
-   self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,));self._remove_vectors(key)
-   for i,chunk in enumerate(chunks):
-    c=dict(chunk,id=f"{key}:{revision}:{i}",document_id=key,revision=revision,tenant=doc["tenant"])
-    self.db.execute("INSERT INTO chunks VALUES(?,?,?,?)",(c["id"],key,doc["tenant"],json.dumps(c)))
-   self._index_vectors(doc,chunks)
-   doc["status"]="ready";self._save(doc)
-  return True
- def chunks(self,tenant):
-  with self.lock:
-   chunks=[json.loads(r[0]) for r in self.db.execute("SELECT body FROM chunks WHERE tenant=? ORDER BY id",(tenant,))]
-   return [c for c in chunks if (d:=self.document(c["document_id"])) and not d["deleted"] and d["revision"]==c["revision"] and d["status"]=="ready"]
+    def close(self):
+        self.db.close()
 
- def delete(self,key,tenant):
-  with self.transaction():
-   doc=self.document(key)
-   if not doc or doc["tenant"]!=tenant:return False
-   if doc["deleted"]:return True
-   doc.update(deleted=True,status="deleted",content="",revision=doc["revision"]+1)
-   self._save(doc);self.db.execute("DELETE FROM chunks WHERE document_id=?",(key,));self._remove_vectors(key)
-  return True
+    def document(self, key):
+        with self.lock:
+            row = self.db.execute(
+                "SELECT body FROM documents WHERE id=?", (key,)
+            ).fetchone()
+            return json.loads(row[0]) if row else None
 
- def jobs(self,tenant):
-  with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM jobs WHERE tenant=? ORDER BY id",(tenant,))]
- def _save_job(self,job):self.db.execute("UPDATE jobs SET body=? WHERE id=?",(json.dumps(job),job["id"]))
+    def revision(self, key, revision):
+        with self.lock:
+            row = self.db.execute(
+                "SELECT body FROM revisions WHERE document_id=? AND revision=?",
+                (key, revision),
+            ).fetchone()
+            return json.loads(row[0]) if row else None
 
- def claim(self,owner,now=None,lease_seconds=60,max_attempts=3):
-  now=time.time() if now is None else now
-  with self.transaction():
-   for row in self.db.execute("SELECT body FROM jobs ORDER BY id").fetchall():
-    j=json.loads(row[0])
-    if (j["status"]=="pending" and j["available_at"]<=now) or (j["status"]=="running" and j["lease_until"]<=now):
-     if j["attempts"]>=max_attempts:
-      j.update(status="failed",error="Worker lease expired repeatedly",lease_until=0)
-      self._save_job(j)
-      doc=self.document(j["document_id"])
-      if doc and not doc["deleted"] and doc["revision"]==j["revision"]:doc["status"]="failed";self._save(doc)
-      continue
-     j.update(status="running",owner=owner,lease_token=uuid.uuid4().hex,attempts=j["attempts"]+1,lease_until=now+lease_seconds)
-     self._save_job(j);return j
-  return None
+    def _save(self, doc):
+        self.db.execute(
+            "INSERT INTO documents(id,tenant,body) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET body=excluded.body",
+            (doc["id"], doc["tenant"], json.dumps(doc)),
+        )
 
- def finish(self,job,error=None,now=None,max_attempts=3):
-  now=time.time() if now is None else now
-  with self.transaction():
-   row=self.db.execute("SELECT body FROM jobs WHERE id=?",(job["id"],)).fetchone()
-   if not row:return False
-   live=json.loads(row[0])
-   if not self._owns_lease(live,job,now):return False
-   status="succeeded" if not error else ("failed" if live["attempts"]>=max_attempts else "pending")
-   live.update(status=status,error=error,available_at=now+min(60,2**live["attempts"]),lease_until=0)
-   self._save_job(live)
-   if status=="failed":
-    doc=self.document(live["document_id"])
-    if doc and not doc["deleted"] and doc["revision"]==live["revision"]:doc["status"]="failed";self._save(doc)
-  return True
+    def ingest(self, tenant, source, title, content, groups):
+        key = document_key(tenant, source)
+        with self.transaction():
+            old = self.document(key)
+            if (
+                old
+                and not old["deleted"]
+                and all(
+                    old[k] == v
+                    for k, v in dict(
+                        title=title, content=content, groups=sorted(set(groups))
+                    ).items()
+                )
+            ):
+                return old
+            revision = old["revision"] + 1 if old else 1
+            doc = dict(
+                id=key,
+                tenant=tenant,
+                source=source,
+                title=title,
+                content=content,
+                groups=sorted(set(groups)),
+                revision=revision,
+                digest=content_digest(content),
+                deleted=False,
+                status="pending",
+            )
+            self._save(doc)
+            job = dict(
+                id=f"{key}:{revision}",
+                document_id=key,
+                tenant=tenant,
+                revision=revision,
+                status="pending",
+                attempts=0,
+                available_at=0,
+                lease_until=0,
+                owner=None,
+                lease_token=None,
+                error=None,
+            )
+            self.db.execute(
+                "INSERT INTO jobs VALUES(?,?,?)", (job["id"], tenant, json.dumps(job))
+            )
+            self.db.execute(
+                "INSERT INTO revisions VALUES(?,?,?)", (key, revision, json.dumps(doc))
+            )
+        return doc
 
- def set_membership(self,tenant,subject,groups,roles):
-  with self.transaction():
-   body=json.dumps(dict(groups=sorted(set(groups)),roles=sorted(set(roles))))
-   self.db.execute("INSERT INTO memberships VALUES(?,?,?) ON CONFLICT(tenant,subject) DO UPDATE SET body=excluded.body",(tenant,subject,body))
- def resolve(self,principal):
-  from .identity import Principal
-  with self.lock:
-   row=self.db.execute("SELECT body FROM memberships WHERE tenant=? AND subject=?",(principal.tenant,principal.subject)).fetchone()
-   if not row:return principal
-   record=json.loads(row[0]);return Principal(principal.subject,principal.tenant,frozenset(record["groups"]),frozenset(record["roles"]))
+    def documents(self, tenant):
+        with self.lock:
+            return [
+                json.loads(r[0])
+                for r in self.db.execute(
+                    "SELECT body FROM documents WHERE tenant=? ORDER BY id", (tenant,)
+                ).fetchall()
+            ]
 
- def cache_put(self,tenant,key,value,now=None,ttl=300):
-  now=time.time() if now is None else now
-  with self.transaction():self.db.execute("INSERT INTO cache VALUES(?,?,?,?) ON CONFLICT(tenant,key) DO UPDATE SET body=excluded.body,expires=excluded.expires",(tenant,key,now+ttl,json.dumps(value)))
- def cache_get(self,tenant,key,now=None):
-  now=time.time() if now is None else now
-  with self.lock:
-   row=self.db.execute("SELECT body FROM cache WHERE tenant=? AND key=? AND expires>?",(tenant,key,now)).fetchone()
-   return json.loads(row[0]) if row else None
+    def index(self, key, revision, chunks, job=None, now=None):
+        now = time.time() if now is None else now
+        with self.transaction():
+            row = self.db.execute(
+                "SELECT body FROM jobs WHERE id=?", (f"{key}:{revision}",)
+            ).fetchone()
+            live = json.loads(row[0]) if row else None
+            if job is not None:
+                if not live or not self._owns_lease(live, job, now):
+                    return False
+            elif live and live["status"] == "running":
+                return False
+            doc = self.document(key)
+            if not doc or doc["deleted"] or doc["revision"] != revision:
+                return False
+            self.db.execute("DELETE FROM chunks WHERE document_id=?", (key,))
+            self._remove_vectors(key)
+            for i, chunk in enumerate(chunks):
+                c = dict(
+                    chunk,
+                    id=f"{key}:{revision}:{i}",
+                    document_id=key,
+                    revision=revision,
+                    tenant=doc["tenant"],
+                )
+                self.db.execute(
+                    "INSERT INTO chunks VALUES(?,?,?,?)",
+                    (c["id"], key, doc["tenant"], json.dumps(c)),
+                )
+            self._index_vectors(doc, chunks)
+            doc["status"] = "ready"
+            self._save(doc)
+        return True
 
- def feedback(self,tenant,subject,question_hash,rating,comment):
-  import uuid
-  if rating not in {"helpful","incorrect","missing_source"} or len(comment)>1000:raise ValueError("Invalid feedback")
-  key=str(uuid.uuid4());value=dict(id=key,subject=subject,question_hash=question_hash,rating=rating,comment=comment)
-  with self.transaction():self.db.execute("INSERT INTO feedback VALUES(?,?,?)",(key,tenant,json.dumps(value)))
-  return key
- def feedback_records(self,tenant):
-  with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM feedback WHERE tenant=?",(tenant,))]
+    def chunks(self, tenant):
+        with self.lock:
+            chunks = [
+                json.loads(r[0])
+                for r in self.db.execute(
+                    "SELECT body FROM chunks WHERE tenant=? ORDER BY id", (tenant,)
+                )
+            ]
+            return [
+                c
+                for c in chunks
+                if (d := self.document(c["document_id"]))
+                and not d["deleted"]
+                and d["revision"] == c["revision"]
+                and d["status"] == "ready"
+            ]
 
- def _remove_vectors(self,key):pass
- def _index_vectors(self,doc,chunks):pass
+    def delete(self, key, tenant):
+        with self.transaction():
+            doc = self.document(key)
+            if not doc or doc["tenant"] != tenant:
+                return False
+            if doc["deleted"]:
+                return True
+            doc.update(
+                deleted=True, status="deleted", content="", revision=doc["revision"] + 1
+            )
+            self._save(doc)
+            self.db.execute("DELETE FROM chunks WHERE document_id=?", (key,))
+            self._remove_vectors(key)
+        return True
 
- def reindex(self,key,tenant):
-  with self.transaction():
-   doc=self.document(key)
-   if not doc or doc["tenant"]!=tenant or doc["deleted"]:return False
-   jobid=f"{key}:{doc['revision']}"
-   job=dict(id=jobid,document_id=key,tenant=tenant,revision=doc["revision"],status="pending",attempts=0,available_at=0,lease_until=0,owner=None,lease_token=None,error=None)
-   self._save_job(job);doc["status"]="pending";self._save(doc)
-  return True
+    def jobs(self, tenant):
+        with self.lock:
+            return [
+                json.loads(r[0])
+                for r in self.db.execute(
+                    "SELECT body FROM jobs WHERE tenant=? ORDER BY id", (tenant,)
+                )
+            ]
 
- def audit(self,tenant,subject,action,details):
-  import uuid
-  key=str(uuid.uuid4());event=dict(id=key,subject=subject,action=action,details=details)
-  with self.transaction():self.db.execute("INSERT INTO audit VALUES(?,?,?,?)",(key,tenant,time.time(),json.dumps(event)))
- def audit_events(self,tenant,limit=100):
-  with self.lock:return [json.loads(r[0]) for r in self.db.execute("SELECT body FROM audit WHERE tenant=? ORDER BY created DESC LIMIT ?",(tenant,limit))]
+    def _save_job(self, job):
+        self.db.execute(
+            "UPDATE jobs SET body=? WHERE id=?", (json.dumps(job), job["id"])
+        )
 
- def prune_cache(self,now=None):
-  now=time.time() if now is None else now
-  with self.transaction():return self.db.execute("DELETE FROM cache WHERE expires<=?",(now,)).rowcount
+    def claim(self, owner, now=None, lease_seconds=60, max_attempts=3):
+        now = time.time() if now is None else now
+        with self.transaction():
+            for row in self.db.execute("SELECT body FROM jobs ORDER BY id").fetchall():
+                j = json.loads(row[0])
+                if (j["status"] == "pending" and j["available_at"] <= now) or (
+                    j["status"] == "running" and j["lease_until"] <= now
+                ):
+                    if j["attempts"] >= max_attempts:
+                        j.update(
+                            status="failed",
+                            error="Worker lease expired repeatedly",
+                            lease_until=0,
+                        )
+                        self._save_job(j)
+                        doc = self.document(j["document_id"])
+                        if (
+                            doc
+                            and not doc["deleted"]
+                            and doc["revision"] == j["revision"]
+                        ):
+                            doc["status"] = "failed"
+                            self._save(doc)
+                        continue
+                    j.update(
+                        status="running",
+                        owner=owner,
+                        lease_token=uuid.uuid4().hex,
+                        attempts=j["attempts"] + 1,
+                        lease_until=now + lease_seconds,
+                    )
+                    self._save_job(j)
+                    return j
+        return None
 
- @staticmethod
- def _owns_lease(live,job,now):
-  return live["status"]=="running" and live["lease_until"]>now and live["owner"]==job["owner"] and live["attempts"]==job["attempts"] and live.get("lease_token")==job.get("lease_token")
+    def finish(self, job, error=None, now=None, max_attempts=3):
+        now = time.time() if now is None else now
+        with self.transaction():
+            row = self.db.execute(
+                "SELECT body FROM jobs WHERE id=?", (job["id"],)
+            ).fetchone()
+            if not row:
+                return False
+            live = json.loads(row[0])
+            if not self._owns_lease(live, job, now):
+                return False
+            status = (
+                "succeeded"
+                if not error
+                else ("failed" if live["attempts"] >= max_attempts else "pending")
+            )
+            live.update(
+                status=status,
+                error=error,
+                available_at=now + min(60, 2 ** live["attempts"]),
+                lease_until=0,
+            )
+            self._save_job(live)
+            if status == "failed":
+                doc = self.document(live["document_id"])
+                if doc and not doc["deleted"] and doc["revision"] == live["revision"]:
+                    doc["status"] = "failed"
+                    self._save(doc)
+        return True
+
+    def set_membership(self, tenant, subject, groups, roles):
+        with self.transaction():
+            body = json.dumps(
+                dict(groups=sorted(set(groups)), roles=sorted(set(roles)))
+            )
+            self.db.execute(
+                "INSERT INTO memberships VALUES(?,?,?) ON CONFLICT(tenant,subject) DO UPDATE SET body=excluded.body",
+                (tenant, subject, body),
+            )
+
+    def resolve(self, principal):
+        from .identity import Principal
+
+        with self.lock:
+            row = self.db.execute(
+                "SELECT body FROM memberships WHERE tenant=? AND subject=?",
+                (principal.tenant, principal.subject),
+            ).fetchone()
+            if not row:
+                return principal
+            record = json.loads(row[0])
+            return Principal(
+                principal.subject,
+                principal.tenant,
+                frozenset(record["groups"]),
+                frozenset(record["roles"]),
+            )
+
+    def cache_put(self, tenant, key, value, now=None, ttl=300):
+        now = time.time() if now is None else now
+        with self.transaction():
+            self.db.execute(
+                "INSERT INTO cache VALUES(?,?,?,?) ON CONFLICT(tenant,key) DO UPDATE SET body=excluded.body,expires=excluded.expires",
+                (tenant, key, now + ttl, json.dumps(value)),
+            )
+
+    def cache_get(self, tenant, key, now=None):
+        now = time.time() if now is None else now
+        with self.lock:
+            row = self.db.execute(
+                "SELECT body FROM cache WHERE tenant=? AND key=? AND expires>?",
+                (tenant, key, now),
+            ).fetchone()
+            return json.loads(row[0]) if row else None
+
+    def feedback(self, tenant, subject, question_hash, rating, comment):
+        import uuid
+
+        if (
+            rating not in {"helpful", "incorrect", "missing_source"}
+            or len(comment) > 1000
+        ):
+            raise ValueError("Invalid feedback")
+        key = str(uuid.uuid4())
+        value = dict(
+            id=key,
+            subject=subject,
+            question_hash=question_hash,
+            rating=rating,
+            comment=comment,
+        )
+        with self.transaction():
+            self.db.execute(
+                "INSERT INTO feedback VALUES(?,?,?)", (key, tenant, json.dumps(value))
+            )
+        return key
+
+    def feedback_records(self, tenant):
+        with self.lock:
+            return [
+                json.loads(r[0])
+                for r in self.db.execute(
+                    "SELECT body FROM feedback WHERE tenant=?", (tenant,)
+                )
+            ]
+
+    def _remove_vectors(self, key):
+        pass
+
+    def _index_vectors(self, doc, chunks):
+        pass
+
+    def reindex(self, key, tenant):
+        with self.transaction():
+            doc = self.document(key)
+            if not doc or doc["tenant"] != tenant or doc["deleted"]:
+                return False
+            jobid = f"{key}:{doc['revision']}"
+            job = dict(
+                id=jobid,
+                document_id=key,
+                tenant=tenant,
+                revision=doc["revision"],
+                status="pending",
+                attempts=0,
+                available_at=0,
+                lease_until=0,
+                owner=None,
+                lease_token=None,
+                error=None,
+            )
+            self._save_job(job)
+            doc["status"] = "pending"
+            self._save(doc)
+        return True
+
+    def audit(self, tenant, subject, action, details):
+        import uuid
+
+        key = str(uuid.uuid4())
+        event = dict(id=key, subject=subject, action=action, details=details)
+        with self.transaction():
+            self.db.execute(
+                "INSERT INTO audit VALUES(?,?,?,?)",
+                (key, tenant, time.time(), json.dumps(event)),
+            )
+
+    def audit_events(self, tenant, limit=100):
+        with self.lock:
+            return [
+                json.loads(r[0])
+                for r in self.db.execute(
+                    "SELECT body FROM audit WHERE tenant=? ORDER BY created DESC LIMIT ?",
+                    (tenant, limit),
+                )
+            ]
+
+    def prune_cache(self, now=None):
+        now = time.time() if now is None else now
+        with self.transaction():
+            return self.db.execute(
+                "DELETE FROM cache WHERE expires<=?", (now,)
+            ).rowcount
+
+    @staticmethod
+    def _owns_lease(live, job, now):
+        return (
+            live["status"] == "running"
+            and live["lease_until"] > now
+            and live["owner"] == job["owner"]
+            and live["attempts"] == job["attempts"]
+            and live.get("lease_token") == job.get("lease_token")
+        )

@@ -1,12 +1,183 @@
-import React,{useState,useEffect,useCallback} from 'react';
-import {Requester} from './SearchDesk';
-export function AdminDesk({request}:{request:Requester}){
- const [docs,setDocs]=useState<any[]>([]),[error,setError]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
- const load=useCallback(async()=>{try{const data=await request('/api/documents');setDocs(data.documents)}catch(e){setError((e as Error).message)}},[request]);
- useEffect(()=>{load();const timer=setInterval(load,5000);return()=>clearInterval(timer)},[load]);
- async function upload(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');const form=e.currentTarget;try{await request('/api/upload',{method:'POST',body:new FormData(form)});setMessage('Document accepted. The index will update shortly.');form.reset();await load()}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
- async function access(d:any){const value=prompt('Allowed groups, separated by commas. Leave empty for company-wide access.',d.groups.join(', '));if(value===null)return;try{await request(`/api/documents/${d.id}/access`,{method:'PUT',body:JSON.stringify({groups:value.split(',').map(g=>g.trim()).filter(Boolean)})});setMessage('Access updated; the revised source is being indexed.');await load()}catch(e){setError((e as Error).message)}}
- async function reindex(d:any){try{await request(`/api/documents/${d.id}/reindex`,{method:'POST'});setMessage('Indexing requested for '+d.title);await load()}catch(e){setError((e as Error).message)}}
- async function remove(d:any){if(!confirm('Delete '+d.title+'? Its passages and cached answers will become unavailable.'))return;try{await request(`/api/documents/${d.id}`,{method:'DELETE'});setMessage('Document deleted. Old citations are now unavailable.');await load()}catch(e){setError((e as Error).message)}}
- return <section className="admin-desk" aria-label="Document administration"><div className="result-heading"><h2>Manage company knowledge</h2><button className="text-button" onClick={load}>Refresh status</button></div>{error&&<p className="notice error" role="alert">{error}</p>}{message&&<p className="notice" role="status">{message}</p>}<form className="upload-form" onSubmit={upload}><h3>Add or update a document</h3><p className="quiet">Uploading the same filename updates its revision. Markdown, text, or searchable PDF; maximum 2 MB.</p><label>Document file<input name="file" type="file" accept=".md,.txt,.pdf" required/></label><label>Display title<input name="title" placeholder="Optional — uses the filename" maxLength={200}/></label><label>Access groups<input name="groups" placeholder="staff, finance" maxLength={1000}/></label><p className="quiet">Leave access groups empty to make the document available to everyone in your company.</p><button className="primary" disabled={busy}>{busy?'Uploading…':'Upload document'}</button></form><div className="table-wrap"><table><caption>Document index</caption><thead><tr><th>Document</th><th>Access</th><th>Revision</th><th>Status</th><th>Actions</th></tr></thead><tbody>{docs.map(d=><tr key={d.id}><td><strong>{d.title}</strong><small>{d.source}</small></td><td>{d.groups.join(', ')||'Company-wide'}</td><td>{d.revision}</td><td><span className={'badge '+d.status}>{d.status}</span></td><td>{!d.deleted&&<div className="row-actions"><button onClick={()=>access(d)}>Edit access</button><button onClick={()=>reindex(d)}>Retry indexing</button><button className="danger" onClick={()=>remove(d)}>Delete</button></div>}</td></tr>)}</tbody></table>{!docs.length&&<p className="quiet">No documents yet. Upload your first source above.</p>}</div></section>
+import React, { useState, useEffect, useCallback } from "react";
+import { Requester } from "./SearchDesk";
+export function AdminDesk({ request }: { request: Requester }) {
+  const [docs, setDocs] = useState<any[]>([]),
+    [error, setError] = useState(""),
+    [message, setMessage] = useState(""),
+    [busy, setBusy] = useState(false);
+  const load = useCallback(async () => {
+    try {
+      const data = await request("/api/documents");
+      setDocs(data.documents);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }, [request]);
+  useEffect(() => {
+    load();
+    const timer = setInterval(load, 5000);
+    return () => clearInterval(timer);
+  }, [load]);
+  async function upload(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+    const form = e.currentTarget;
+    try {
+      await request("/api/upload", {
+        method: "POST",
+        body: new FormData(form),
+      });
+      setMessage("Document accepted. The index will update shortly.");
+      form.reset();
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function access(d: any) {
+    const value = prompt(
+      "Allowed groups, separated by commas. Leave empty for company-wide access.",
+      d.groups.join(", ")
+    );
+    if (value === null) return;
+    try {
+      await request(`/api/documents/${d.id}/access`, {
+        method: "PUT",
+        body: JSON.stringify({
+          groups: value
+            .split(",")
+            .map((g) => g.trim())
+            .filter(Boolean),
+        }),
+      });
+      setMessage("Access updated; the revised source is being indexed.");
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+  async function reindex(d: any) {
+    try {
+      await request(`/api/documents/${d.id}/reindex`, { method: "POST" });
+      setMessage("Indexing requested for " + d.title);
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+  async function remove(d: any) {
+    if (
+      !confirm(
+        "Delete " +
+          d.title +
+          "? Its passages and cached answers will become unavailable."
+      )
+    )
+      return;
+    try {
+      await request(`/api/documents/${d.id}`, { method: "DELETE" });
+      setMessage("Document deleted. Old citations are now unavailable.");
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+  return (
+    <section className="admin-desk" aria-label="Document administration">
+      <div className="result-heading">
+        <h2>Manage company knowledge</h2>
+        <button className="text-button" onClick={load}>
+          Refresh status
+        </button>
+      </div>
+      {error && (
+        <p className="notice error" role="alert">
+          {error}
+        </p>
+      )}
+      {message && (
+        <p className="notice" role="status">
+          {message}
+        </p>
+      )}
+      <form className="upload-form" onSubmit={upload}>
+        <h3>Add or update a document</h3>
+        <p className="quiet">
+          Uploading the same filename updates its revision. Markdown, text, or
+          searchable PDF; maximum 2 MB.
+        </p>
+        <label>
+          Document file
+          <input name="file" type="file" accept=".md,.txt,.pdf" required />
+        </label>
+        <label>
+          Display title
+          <input
+            name="title"
+            placeholder="Optional — uses the filename"
+            maxLength={200}
+          />
+        </label>
+        <label>
+          Access groups
+          <input name="groups" placeholder="staff, finance" maxLength={1000} />
+        </label>
+        <p className="quiet">
+          Leave access groups empty to make the document available to everyone
+          in your company.
+        </p>
+        <button className="primary" disabled={busy}>
+          {busy ? "Uploading…" : "Upload document"}
+        </button>
+      </form>
+      <div className="table-wrap">
+        <table>
+          <caption>Document index</caption>
+          <thead>
+            <tr>
+              <th>Document</th>
+              <th>Access</th>
+              <th>Revision</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {docs.map((d) => (
+              <tr key={d.id}>
+                <td>
+                  <strong>{d.title}</strong>
+                  <small>{d.source}</small>
+                </td>
+                <td>{d.groups.join(", ") || "Company-wide"}</td>
+                <td>{d.revision}</td>
+                <td>
+                  <span className={"badge " + d.status}>{d.status}</span>
+                </td>
+                <td>
+                  {!d.deleted && (
+                    <div className="row-actions">
+                      <button onClick={() => access(d)}>Edit access</button>
+                      <button onClick={() => reindex(d)}>Retry indexing</button>
+                      <button className="danger" onClick={() => remove(d)}>
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!docs.length && (
+          <p className="quiet">
+            No documents yet. Upload your first source above.
+          </p>
+        )}
+      </div>
+    </section>
+  );
 }

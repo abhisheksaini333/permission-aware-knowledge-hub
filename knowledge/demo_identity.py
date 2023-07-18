@@ -1,7 +1,80 @@
 def realm(password):
- if len(password)<16:raise ValueError("Set a demo password of at least 16 characters")
- users=[]
- for tenant in ["acme","beta","cobalt"]:
-  for role in ["reader","admin"]:
-   users.append(dict(username=f"{tenant}-{role}",enabled=True,emailVerified=True,firstName=tenant.title(),lastName=role.title(),email=f"{tenant}-{role}@example.test",attributes={"tenant":[tenant]},realmRoles=[role],groups=["staff","finance"] if role=="admin" else ["staff"],credentials=[dict(type="password",value=password,temporary=False)]))
- return dict(realm="knowledge",enabled=True,registrationAllowed=False,resetPasswordAllowed=False,roles={"realm":[{"name":"reader"},{"name":"admin"}]},groups=[{"name":"staff"},{"name":"finance"}],clients=[dict(clientId="knowledge-ui",name="Knowledge Hub",enabled=True,publicClient=True,standardFlowEnabled=True,directAccessGrantsEnabled=False,redirectUris=["http://localhost:5183/*","http://localhost:8083/*"],webOrigins=["http://localhost:5183","http://localhost:8083"],attributes={"pkce.code.challenge.method":"S256"},protocolMappers=[dict(name="tenant",protocol="openid-connect",protocolMapper="oidc-usermodel-attribute-mapper",config={"user.attribute":"tenant","claim.name":"tenant","jsonType.label":"String","access.token.claim":"true","id.token.claim":"true","multivalued":"false"}),dict(name="groups",protocol="openid-connect",protocolMapper="oidc-group-membership-mapper",config={"claim.name":"groups","full.path":"false","access.token.claim":"true","id.token.claim":"true"}),dict(name="audience",protocol="openid-connect",protocolMapper="oidc-audience-mapper",config={"included.custom.audience":"knowledge-api","access.token.claim":"true","id.token.claim":"false"})])],users=users)
+    if len(password) < 16:
+        raise ValueError("Set a demo password of at least 16 characters")
+    users = []
+    for tenant in ["acme", "beta", "cobalt"]:
+        for role in ["reader", "admin"]:
+            users.append(
+                dict(
+                    username=f"{tenant}-{role}",
+                    enabled=True,
+                    emailVerified=True,
+                    firstName=tenant.title(),
+                    lastName=role.title(),
+                    email=f"{tenant}-{role}@example.test",
+                    attributes={"tenant": [tenant]},
+                    realmRoles=[role],
+                    groups=["staff", "finance"] if role == "admin" else ["staff"],
+                    credentials=[
+                        dict(type="password", value=password, temporary=False)
+                    ],
+                )
+            )
+    return dict(
+        realm="knowledge",
+        enabled=True,
+        registrationAllowed=False,
+        resetPasswordAllowed=False,
+        roles={"realm": [{"name": "reader"}, {"name": "admin"}]},
+        groups=[{"name": "staff"}, {"name": "finance"}],
+        clients=[
+            dict(
+                clientId="knowledge-ui",
+                name="Knowledge Hub",
+                enabled=True,
+                publicClient=True,
+                standardFlowEnabled=True,
+                directAccessGrantsEnabled=False,
+                redirectUris=["http://localhost:5183/*", "http://localhost:8083/*"],
+                webOrigins=["http://localhost:5183", "http://localhost:8083"],
+                attributes={"pkce.code.challenge.method": "S256"},
+                protocolMappers=[
+                    dict(
+                        name="tenant",
+                        protocol="openid-connect",
+                        protocolMapper="oidc-usermodel-attribute-mapper",
+                        config={
+                            "user.attribute": "tenant",
+                            "claim.name": "tenant",
+                            "jsonType.label": "String",
+                            "access.token.claim": "true",
+                            "id.token.claim": "true",
+                            "multivalued": "false",
+                        },
+                    ),
+                    dict(
+                        name="groups",
+                        protocol="openid-connect",
+                        protocolMapper="oidc-group-membership-mapper",
+                        config={
+                            "claim.name": "groups",
+                            "full.path": "false",
+                            "access.token.claim": "true",
+                            "id.token.claim": "true",
+                        },
+                    ),
+                    dict(
+                        name="audience",
+                        protocol="openid-connect",
+                        protocolMapper="oidc-audience-mapper",
+                        config={
+                            "included.custom.audience": "knowledge-api",
+                            "access.token.claim": "true",
+                            "id.token.claim": "false",
+                        },
+                    ),
+                ],
+            )
+        ],
+        users=users,
+    )
