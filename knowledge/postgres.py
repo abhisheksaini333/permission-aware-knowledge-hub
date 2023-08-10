@@ -66,6 +66,8 @@ class PostgresStore(Store):
         if len(vector) != 384:
             raise ValueError("Expected a 384-dimensional MiniLM vector")
         p = self.resolve(principal)
+        if not {"reader", "admin"}.intersection(p.roles):
+            return []
         query = """SELECT c.body,1-(v.embedding <=> ?::vector) AS score
   FROM vectors v JOIN chunks c ON c.id=v.id JOIN documents d ON d.id=v.document_id
   WHERE v.tenant=? AND NOT (d.body::jsonb->>'deleted')::boolean
@@ -78,3 +80,13 @@ class PostgresStore(Store):
                 query, (str(vector), p.tenant, list(p.groups), str(vector), limit)
             ).fetchall()
             return [(json.loads(body), float(score)) for body, score in rows]
+
+    def configure_vector_index(self, strategy):
+        if strategy not in {"exact", "ivfflat"}:
+            raise ValueError("Use exact or ivfflat")
+        with self.transaction():
+            self.db.execute("DROP INDEX IF EXISTS knowledge_vector_ivfflat")
+            if strategy == "ivfflat":
+                self.db.execute("CREATE INDEX knowledge_vector_ivfflat ON vectors USING ivfflat (embedding vector_cosine_ops) WITH (lists = 10)")
+            self.db.execute("ANALYZE vectors")
+        return strategy
