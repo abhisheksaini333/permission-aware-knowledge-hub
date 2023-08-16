@@ -1,0 +1,2458 @@
+{
+  "corpus_sha256": "d0cc7218d0d47f4880f3a8522c5344eda8b521c3a5266a68058936f827f120bd",
+  "hardware": {
+    "machine": "arm64",
+    "processor": "arm",
+    "python": "3.10.21",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "torch_threads": 2
+  },
+  "models": {
+    "encoder": "all-MiniLM-L6-v2@7dbbc90392e2f80f3d3c277d6e90027e55de9125",
+    "answer": "flan-t5-small@371f99f1df1429771f01227c93bd662f5eec2480"
+  },
+  "index_ms": 234.89116691052914,
+  "chunk_size": 700,
+  "overlap": 100,
+  "summary": {
+    "dense": {
+      "cases": 19,
+      "errors": 0,
+      "retrieval": {
+        "recall_at_3": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "answer": {
+        "exact_match": 0.6,
+        "token_f1": 0.92,
+        "correct_abstention": 1.0
+      },
+      "latency": {
+        "retrieval_p50_ms": 8.099916856735945,
+        "answer_p95_ms": 162.0967909693718
+      }
+    },
+    "fusion": {
+      "cases": 19,
+      "errors": 0,
+      "retrieval": {
+        "recall_at_3": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "answer": {
+        "exact_match": 0.6,
+        "token_f1": 0.92,
+        "correct_abstention": 1.0
+      },
+      "latency": {
+        "retrieval_p50_ms": 10.799500159919262,
+        "answer_p95_ms": 212.0255830232054
+      }
+    },
+    "lexical": {
+      "cases": 19,
+      "errors": 0,
+      "retrieval": {
+        "recall_at_3": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "answer": {
+        "exact_match": 0.6,
+        "token_f1": 0.92,
+        "correct_abstention": 1.0
+      },
+      "latency": {
+        "retrieval_p50_ms": 0.9832500945776701,
+        "answer_p95_ms": 619.8281249962747
+      }
+    },
+    "rerank": {
+      "cases": 19,
+      "errors": 0,
+      "retrieval": {
+        "recall_at_3": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "answer": {
+        "exact_match": 0.6,
+        "token_f1": 0.92,
+        "correct_abstention": 1.0
+      },
+      "latency": {
+        "retrieval_p50_ms": 15.282083069905639,
+        "answer_p95_ms": 251.2343330308795
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "acme-retention",
+      "mode": "lexical",
+      "expected": "seven days",
+      "actual": "seven days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 2.246249932795763,
+      "answer_ms": 272.07162510603666,
+      "error": null
+    },
+    {
+      "id": "acme-region",
+      "mode": "lexical",
+      "expected": "Dublin",
+      "actual": "Dublin",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 1.1715828441083431,
+      "answer_ms": 138.41141713783145,
+      "error": null
+    },
+    {
+      "id": "acme-reimbursement",
+      "mode": "lexical",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "7dabb2e45ac5a73e571fe96b244996d6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/7dabb2e45ac5a73e571fe96b244996d6/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 0.9090420790016651,
+      "answer_ms": 172.51820815727115,
+      "error": null
+    },
+    {
+      "id": "acme-priority",
+      "mode": "lexical",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "db0185ec65d009647966b7c98adbbe49",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/db0185ec65d009647966b7c98adbbe49/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 1.4233330730348825,
+      "answer_ms": 252.5928751565516,
+      "error": null
+    },
+    {
+      "id": "acme-finance",
+      "mode": "lexical",
+      "expected": "forty million euros",
+      "actual": "forty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "20adb7fdebe0a2d02044762b08429cc0",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 335,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Acme acquisition planning is restricted to the finance group. The acquisition budget is forty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is ACME-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/20adb7fdebe0a2d02044762b08429cc0/revisions/1?page=1&start=0&end=335"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 1.1239999439567327,
+      "answer_ms": 619.8281249962747,
+      "error": null
+    },
+    {
+      "id": "acme-forbidden",
+      "mode": "lexical",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 3.9203749038279057,
+      "answer_ms": 189.32599993422627,
+      "error": null
+    },
+    {
+      "id": "beta-retention",
+      "mode": "lexical",
+      "expected": "fourteen days",
+      "actual": "fourteen days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 1.5376668889075518,
+      "answer_ms": 170.82462483085692,
+      "error": null
+    },
+    {
+      "id": "beta-region",
+      "mode": "lexical",
+      "expected": "Frankfurt",
+      "actual": "Frankfurt",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 0.9523748885840178,
+      "answer_ms": 273.0099579785019,
+      "error": null
+    },
+    {
+      "id": "beta-reimbursement",
+      "mode": "lexical",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "6f7917ed01ee4be4b1425c44c097f45d",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/6f7917ed01ee4be4b1425c44c097f45d/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 0.8650000672787428,
+      "answer_ms": 72.41687504574656,
+      "error": null
+    },
+    {
+      "id": "beta-priority",
+      "mode": "lexical",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "a4d46e532f0994cc295660543285c0ba",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/a4d46e532f0994cc295660543285c0ba/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 0.9735410567373037,
+      "answer_ms": 85.39137500338256,
+      "error": null
+    },
+    {
+      "id": "beta-finance",
+      "mode": "lexical",
+      "expected": "twenty million euros",
+      "actual": "twenty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "388298d9df5a42df3c02545766744a4e",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 336,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Beta acquisition planning is restricted to the finance group. The acquisition budget is twenty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is BETA-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/388298d9df5a42df3c02545766744a4e/revisions/1?page=1&start=0&end=336"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 0.8896670769900084,
+      "answer_ms": 78.28649994917214,
+      "error": null
+    },
+    {
+      "id": "beta-forbidden",
+      "mode": "lexical",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 0.8506670128554106,
+      "answer_ms": 87.28133398108184,
+      "error": null
+    },
+    {
+      "id": "cobalt-retention",
+      "mode": "lexical",
+      "expected": "thirty days",
+      "actual": "thirty days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 0.9832500945776701,
+      "answer_ms": 85.12395806610584,
+      "error": null
+    },
+    {
+      "id": "cobalt-region",
+      "mode": "lexical",
+      "expected": "Paris",
+      "actual": "Paris",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 0.8646249771118164,
+      "answer_ms": 97.90420811623335,
+      "error": null
+    },
+    {
+      "id": "cobalt-reimbursement",
+      "mode": "lexical",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "92badf42783745bda1c7d6315eb1ecd9",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/92badf42783745bda1c7d6315eb1ecd9/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 0.8675418794155121,
+      "answer_ms": 84.71949980594218,
+      "error": null
+    },
+    {
+      "id": "cobalt-priority",
+      "mode": "lexical",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "3617c0dc220d99d2267ad812ad48e02c",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/3617c0dc220d99d2267ad812ad48e02c/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 1.1578327976167202,
+      "answer_ms": 116.61075009033084,
+      "error": null
+    },
+    {
+      "id": "cobalt-finance",
+      "mode": "lexical",
+      "expected": "sixty million euros",
+      "actual": "sixty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "8427d3cf468446c613e479ddef986468",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 339,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Cobalt acquisition planning is restricted to the finance group. The acquisition budget is sixty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is COBALT-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/8427d3cf468446c613e479ddef986468/revisions/1?page=1&start=0&end=339"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 1.2467498891055584,
+      "answer_ms": 109.9457920063287,
+      "error": null
+    },
+    {
+      "id": "cobalt-forbidden",
+      "mode": "lexical",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 1.0669580660760403,
+      "answer_ms": 112.87024989724159,
+      "error": null
+    },
+    {
+      "id": "unknown-astronomy",
+      "mode": "lexical",
+      "expected": null,
+      "actual": "No supported answer is available.",
+      "abstained": true,
+      "citations": [],
+      "sources": [],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 0.8997078984975815,
+      "answer_ms": 1.53104099445045,
+      "error": null
+    },
+    {
+      "id": "acme-retention",
+      "mode": "dense",
+      "expected": "seven days",
+      "actual": "seven days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 33.39029103517532,
+      "answer_ms": 95.63583298586309,
+      "error": null
+    },
+    {
+      "id": "acme-region",
+      "mode": "dense",
+      "expected": "Dublin",
+      "actual": "Dublin",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 8.31733294762671,
+      "answer_ms": 83.84879189543426,
+      "error": null
+    },
+    {
+      "id": "acme-reimbursement",
+      "mode": "dense",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "7dabb2e45ac5a73e571fe96b244996d6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/7dabb2e45ac5a73e571fe96b244996d6/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "support.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 9.859374957159162,
+      "answer_ms": 106.78341705352068,
+      "error": null
+    },
+    {
+      "id": "acme-priority",
+      "mode": "dense",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "db0185ec65d009647966b7c98adbbe49",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/db0185ec65d009647966b7c98adbbe49/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 6.486665923148394,
+      "answer_ms": 83.56258412823081,
+      "error": null
+    },
+    {
+      "id": "acme-finance",
+      "mode": "dense",
+      "expected": "forty million euros",
+      "actual": "forty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "20adb7fdebe0a2d02044762b08429cc0",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 335,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Acme acquisition planning is restricted to the finance group. The acquisition budget is forty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is ACME-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/20adb7fdebe0a2d02044762b08429cc0/revisions/1?page=1&start=0&end=335"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 7.189332973212004,
+      "answer_ms": 125.80745806917548,
+      "error": null
+    },
+    {
+      "id": "acme-forbidden",
+      "mode": "dense",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 9.192042052745819,
+      "answer_ms": 130.5970000103116,
+      "error": null
+    },
+    {
+      "id": "beta-retention",
+      "mode": "dense",
+      "expected": "fourteen days",
+      "actual": "fourteen days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 9.757874999195337,
+      "answer_ms": 74.77766694501042,
+      "error": null
+    },
+    {
+      "id": "beta-region",
+      "mode": "dense",
+      "expected": "Frankfurt",
+      "actual": "Frankfurt",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 6.123875034973025,
+      "answer_ms": 80.0188749562949,
+      "error": null
+    },
+    {
+      "id": "beta-reimbursement",
+      "mode": "dense",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "6f7917ed01ee4be4b1425c44c097f45d",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/6f7917ed01ee4be4b1425c44c097f45d/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "support.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 7.31970788910985,
+      "answer_ms": 95.8735418971628,
+      "error": null
+    },
+    {
+      "id": "beta-priority",
+      "mode": "dense",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "a4d46e532f0994cc295660543285c0ba",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/a4d46e532f0994cc295660543285c0ba/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 8.497542003169656,
+      "answer_ms": 105.10866693221033,
+      "error": null
+    },
+    {
+      "id": "beta-finance",
+      "mode": "dense",
+      "expected": "twenty million euros",
+      "actual": "twenty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "388298d9df5a42df3c02545766744a4e",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 336,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Beta acquisition planning is restricted to the finance group. The acquisition budget is twenty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is BETA-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/388298d9df5a42df3c02545766744a4e/revisions/1?page=1&start=0&end=336"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 10.39733411744237,
+      "answer_ms": 162.0967909693718,
+      "error": null
+    },
+    {
+      "id": "beta-forbidden",
+      "mode": "dense",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 6.202665856108069,
+      "answer_ms": 97.20258298330009,
+      "error": null
+    },
+    {
+      "id": "cobalt-retention",
+      "mode": "dense",
+      "expected": "thirty days",
+      "actual": "thirty days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 8.099916856735945,
+      "answer_ms": 88.1049579475075,
+      "error": null
+    },
+    {
+      "id": "cobalt-region",
+      "mode": "dense",
+      "expected": "Paris",
+      "actual": "Paris",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 7.717625005170703,
+      "answer_ms": 67.50441598705947,
+      "error": null
+    },
+    {
+      "id": "cobalt-reimbursement",
+      "mode": "dense",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "92badf42783745bda1c7d6315eb1ecd9",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/92badf42783745bda1c7d6315eb1ecd9/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "support.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 6.204917095601559,
+      "answer_ms": 100.51354207098484,
+      "error": null
+    },
+    {
+      "id": "cobalt-priority",
+      "mode": "dense",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "3617c0dc220d99d2267ad812ad48e02c",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/3617c0dc220d99d2267ad812ad48e02c/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 8.332459023222327,
+      "answer_ms": 86.29000000655651,
+      "error": null
+    },
+    {
+      "id": "cobalt-finance",
+      "mode": "dense",
+      "expected": "sixty million euros",
+      "actual": "sixty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "8427d3cf468446c613e479ddef986468",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 339,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Cobalt acquisition planning is restricted to the finance group. The acquisition budget is sixty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is COBALT-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/8427d3cf468446c613e479ddef986468/revisions/1?page=1&start=0&end=339"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 6.875583902001381,
+      "answer_ms": 87.1690830681473,
+      "error": null
+    },
+    {
+      "id": "cobalt-forbidden",
+      "mode": "dense",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 6.08783308416605,
+      "answer_ms": 139.4788338802755,
+      "error": null
+    },
+    {
+      "id": "unknown-astronomy",
+      "mode": "dense",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 14.596791006624699,
+      "answer_ms": 153.9964999537915,
+      "error": null
+    },
+    {
+      "id": "acme-retention",
+      "mode": "fusion",
+      "expected": "seven days",
+      "actual": "seven days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 9.24799987114966,
+      "answer_ms": 105.02287489362061,
+      "error": null
+    },
+    {
+      "id": "acme-region",
+      "mode": "fusion",
+      "expected": "Dublin",
+      "actual": "Dublin",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 7.537208031862974,
+      "answer_ms": 84.9275840446353,
+      "error": null
+    },
+    {
+      "id": "acme-reimbursement",
+      "mode": "fusion",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "7dabb2e45ac5a73e571fe96b244996d6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/7dabb2e45ac5a73e571fe96b244996d6/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 6.362750194966793,
+      "answer_ms": 94.95083405636251,
+      "error": null
+    },
+    {
+      "id": "acme-priority",
+      "mode": "fusion",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "db0185ec65d009647966b7c98adbbe49",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/db0185ec65d009647966b7c98adbbe49/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 13.026792090386152,
+      "answer_ms": 146.89733390696347,
+      "error": null
+    },
+    {
+      "id": "acme-finance",
+      "mode": "fusion",
+      "expected": "forty million euros",
+      "actual": "forty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "20adb7fdebe0a2d02044762b08429cc0",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 335,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Acme acquisition planning is restricted to the finance group. The acquisition budget is forty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is ACME-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/20adb7fdebe0a2d02044762b08429cc0/revisions/1?page=1&start=0&end=335"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 16.053957864642143,
+      "answer_ms": 124.91074996069074,
+      "error": null
+    },
+    {
+      "id": "acme-forbidden",
+      "mode": "fusion",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 9.244542103260756,
+      "answer_ms": 129.3589579872787,
+      "error": null
+    },
+    {
+      "id": "beta-retention",
+      "mode": "fusion",
+      "expected": "fourteen days",
+      "actual": "fourteen days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 7.264417130500078,
+      "answer_ms": 212.0255830232054,
+      "error": null
+    },
+    {
+      "id": "beta-region",
+      "mode": "fusion",
+      "expected": "Frankfurt",
+      "actual": "Frankfurt",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 30.26583301834762,
+      "answer_ms": 153.92399998381734,
+      "error": null
+    },
+    {
+      "id": "beta-reimbursement",
+      "mode": "fusion",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "6f7917ed01ee4be4b1425c44c097f45d",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/6f7917ed01ee4be4b1425c44c097f45d/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 24.644333869218826,
+      "answer_ms": 117.20370780676603,
+      "error": null
+    },
+    {
+      "id": "beta-priority",
+      "mode": "fusion",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "a4d46e532f0994cc295660543285c0ba",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/a4d46e532f0994cc295660543285c0ba/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 11.150541948154569,
+      "answer_ms": 136.50174997746944,
+      "error": null
+    },
+    {
+      "id": "beta-finance",
+      "mode": "fusion",
+      "expected": "twenty million euros",
+      "actual": "twenty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "388298d9df5a42df3c02545766744a4e",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 336,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Beta acquisition planning is restricted to the finance group. The acquisition budget is twenty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is BETA-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/388298d9df5a42df3c02545766744a4e/revisions/1?page=1&start=0&end=336"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 10.529249906539917,
+      "answer_ms": 169.1002498846501,
+      "error": null
+    },
+    {
+      "id": "beta-forbidden",
+      "mode": "fusion",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 18.481750041246414,
+      "answer_ms": 132.974665844813,
+      "error": null
+    },
+    {
+      "id": "cobalt-retention",
+      "mode": "fusion",
+      "expected": "thirty days",
+      "actual": "thirty days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 7.43804220110178,
+      "answer_ms": 94.96945911087096,
+      "error": null
+    },
+    {
+      "id": "cobalt-region",
+      "mode": "fusion",
+      "expected": "Paris",
+      "actual": "Paris",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 7.118708919733763,
+      "answer_ms": 111.12274997867644,
+      "error": null
+    },
+    {
+      "id": "cobalt-reimbursement",
+      "mode": "fusion",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "92badf42783745bda1c7d6315eb1ecd9",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/92badf42783745bda1c7d6315eb1ecd9/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 15.400332864373922,
+      "answer_ms": 140.29604196548462,
+      "error": null
+    },
+    {
+      "id": "cobalt-priority",
+      "mode": "fusion",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "3617c0dc220d99d2267ad812ad48e02c",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/3617c0dc220d99d2267ad812ad48e02c/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 13.815958984196186,
+      "answer_ms": 146.44624991342425,
+      "error": null
+    },
+    {
+      "id": "cobalt-finance",
+      "mode": "fusion",
+      "expected": "sixty million euros",
+      "actual": "sixty million euros.",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "8427d3cf468446c613e479ddef986468",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 339,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Cobalt acquisition planning is restricted to the finance group. The acquisition budget is sixty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is COBALT-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/8427d3cf468446c613e479ddef986468/revisions/1?page=1&start=0&end=339"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 9.410499827936292,
+      "answer_ms": 146.58862492069602,
+      "error": null
+    },
+    {
+      "id": "cobalt-forbidden",
+      "mode": "fusion",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 10.799500159919262,
+      "answer_ms": 145.91933391056955,
+      "error": null
+    },
+    {
+      "id": "unknown-astronomy",
+      "mode": "fusion",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 16.30979194305837,
+      "answer_ms": 137.44908291846514,
+      "error": null
+    },
+    {
+      "id": "acme-retention",
+      "mode": "rerank",
+      "expected": "seven days",
+      "actual": "seven days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 15.282083069905639,
+      "answer_ms": 136.38970791362226,
+      "error": null
+    },
+    {
+      "id": "acme-region",
+      "mode": "rerank",
+      "expected": "Dublin",
+      "actual": "Dublin",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "19b7f5001be77ac07314f80a2e1f35fb",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 465,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Acme operations handbook. Database backups are retained for seven days. Backups are encrypted at rest and stored in Dublin. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/19b7f5001be77ac07314f80a2e1f35fb/revisions/1?page=1&start=0&end=465"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 20.462250104174018,
+      "answer_ms": 139.15983284823596,
+      "error": null
+    },
+    {
+      "id": "acme-reimbursement",
+      "mode": "rerank",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "7dabb2e45ac5a73e571fe96b244996d6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/7dabb2e45ac5a73e571fe96b244996d6/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 9.435458108782768,
+      "answer_ms": 117.52095795236528,
+      "error": null
+    },
+    {
+      "id": "acme-priority",
+      "mode": "rerank",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "db0185ec65d009647966b7c98adbbe49",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/db0185ec65d009647966b7c98adbbe49/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 11.885958956554532,
+      "answer_ms": 148.10216589830816,
+      "error": null
+    },
+    {
+      "id": "acme-finance",
+      "mode": "rerank",
+      "expected": "forty million euros",
+      "actual": "forty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "20adb7fdebe0a2d02044762b08429cc0",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 335,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Acme acquisition planning is restricted to the finance group. The acquisition budget is forty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is ACME-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/20adb7fdebe0a2d02044762b08429cc0/revisions/1?page=1&start=0&end=335"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 12.676292099058628,
+      "answer_ms": 148.91566685400903,
+      "error": null
+    },
+    {
+      "id": "acme-forbidden",
+      "mode": "rerank",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 13.107500039041042,
+      "answer_ms": 143.34054198116064,
+      "error": null
+    },
+    {
+      "id": "beta-retention",
+      "mode": "rerank",
+      "expected": "fourteen days",
+      "actual": "fourteen days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 16.967000206932425,
+      "answer_ms": 177.81741707585752,
+      "error": null
+    },
+    {
+      "id": "beta-region",
+      "mode": "rerank",
+      "expected": "Frankfurt",
+      "actual": "Frankfurt",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "4ff0cbe6190e8ae123ee673fdca68ec6",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 471,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Beta operations handbook. Database backups are retained for fourteen days. Backups are encrypted at rest and stored in Frankfurt. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/4ff0cbe6190e8ae123ee673fdca68ec6/revisions/1?page=1&start=0&end=471"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 11.236708145588636,
+      "answer_ms": 124.92650002241135,
+      "error": null
+    },
+    {
+      "id": "beta-reimbursement",
+      "mode": "rerank",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "6f7917ed01ee4be4b1425c44c097f45d",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/6f7917ed01ee4be4b1425c44c097f45d/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 16.357375076040626,
+      "answer_ms": 151.27054206095636,
+      "error": null
+    },
+    {
+      "id": "beta-priority",
+      "mode": "rerank",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "a4d46e532f0994cc295660543285c0ba",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/a4d46e532f0994cc295660543285c0ba/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 16.302542062476277,
+      "answer_ms": 134.19095799326897,
+      "error": null
+    },
+    {
+      "id": "beta-finance",
+      "mode": "rerank",
+      "expected": "twenty million euros",
+      "actual": "twenty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "388298d9df5a42df3c02545766744a4e",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 336,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Beta acquisition planning is restricted to the finance group. The acquisition budget is twenty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is BETA-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/388298d9df5a42df3c02545766744a4e/revisions/1?page=1&start=0&end=336"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 10.173332877457142,
+      "answer_ms": 151.12395794130862,
+      "error": null
+    },
+    {
+      "id": "beta-forbidden",
+      "mode": "rerank",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 17.979665892198682,
+      "answer_ms": 215.84320883266628,
+      "error": null
+    },
+    {
+      "id": "cobalt-retention",
+      "mode": "rerank",
+      "expected": "thirty days",
+      "actual": "thirty days",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 18.430624855682254,
+      "answer_ms": 251.2343330308795,
+      "error": null
+    },
+    {
+      "id": "cobalt-region",
+      "mode": "rerank",
+      "expected": "Paris",
+      "actual": "Paris",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "b5c6d4fb1052d3e40a35df5e60430635",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 467,
+          "title": "Resilience manual",
+          "source": "operations.md",
+          "text": "Cobalt operations handbook. Database backups are retained for thirty days. Backups are encrypted at rest and stored in Paris. The release manager approves production deployments. A failed deployment is rolled back before another release is attempted. Every restore must be checked against the latest successful backup. Recovery incidents are documented with the affected service, evidence, and owner. The operations team rehearses restoring a database once per month.",
+          "url": "/api/documents/b5c6d4fb1052d3e40a35df5e60430635/revisions/1?page=1&start=0&end=467"
+        }
+      ],
+      "sources": [
+        "operations.md",
+        "support.md",
+        "people.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 55.71295809932053,
+      "answer_ms": 158.38354197330773,
+      "error": null
+    },
+    {
+      "id": "cobalt-reimbursement",
+      "mode": "rerank",
+      "expected": "team lead",
+      "actual": "the team lead",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "92badf42783745bda1c7d6315eb1ecd9",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 399,
+          "title": "Employee handbook",
+          "source": "people.md",
+          "text": "Expense reimbursements require approval from the team lead. Employees submit receipts through the company expense portal. Travel expenses should include the trip purpose and project reference. New employees attend security training before receiving production access. An employee who completes a weekend incident shift receives one recovery day. Leave requests are reviewed by the reporting manager.",
+          "url": "/api/documents/92badf42783745bda1c7d6315eb1ecd9/revisions/1?page=1&start=0&end=399"
+        }
+      ],
+      "sources": [
+        "people.md",
+        "operations.md",
+        "support.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 11.327541898936033,
+      "answer_ms": 190.27954200282693,
+      "error": null
+    },
+    {
+      "id": "cobalt-priority",
+      "mode": "rerank",
+      "expected": "two hours",
+      "actual": "within two hours",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "3617c0dc220d99d2267ad812ad48e02c",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 441,
+          "title": "Customer support guide",
+          "source": "support.md",
+          "text": "Customer support operates Monday through Friday. Standard support hours are 09:00 to 17:00 UTC. A priority incident must receive an initial response within two hours. Unresolved priority incidents are escalated to the support manager. A support case should contain the affected account, relevant logs, impact, and a contact address. Operators never request customer passwords. Customers receive an incident summary after service is restored.",
+          "url": "/api/documents/3617c0dc220d99d2267ad812ad48e02c/revisions/1?page=1&start=0&end=441"
+        }
+      ],
+      "sources": [
+        "support.md",
+        "people.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 0.0,
+      "token_f1": 0.8,
+      "correct_abstention": null,
+      "retrieval_ms": 20.817624870687723,
+      "answer_ms": 233.59987512230873,
+      "error": null
+    },
+    {
+      "id": "cobalt-finance",
+      "mode": "rerank",
+      "expected": "sixty million euros",
+      "actual": "sixty million euros",
+      "abstained": false,
+      "citations": [
+        {
+          "number": 1,
+          "document_id": "8427d3cf468446c613e479ddef986468",
+          "revision": 1,
+          "page": 1,
+          "start": 0,
+          "end": 339,
+          "title": "Acquisition review",
+          "source": "finance.md",
+          "text": "Cobalt acquisition planning is restricted to the finance group. The acquisition budget is sixty million euros. The chief financial officer approves acquisition spending. Budget changes require a recorded finance review. The project codename is COBALT-ORCHID. This plan is confidential and must not be disclosed to other teams or companies.",
+          "url": "/api/documents/8427d3cf468446c613e479ddef986468/revisions/1?page=1&start=0&end=339"
+        }
+      ],
+      "sources": [
+        "finance.md",
+        "support.md",
+        "operations.md"
+      ],
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "exact_match": 1.0,
+      "token_f1": 1.0,
+      "correct_abstention": null,
+      "retrieval_ms": 29.943916015326977,
+      "answer_ms": 209.70641705207527,
+      "error": null
+    },
+    {
+      "id": "cobalt-forbidden",
+      "mode": "rerank",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "support.md",
+        "operations.md",
+        "people.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 10.25541708804667,
+      "answer_ms": 119.18508308008313,
+      "error": null
+    },
+    {
+      "id": "unknown-astronomy",
+      "mode": "rerank",
+      "expected": null,
+      "actual": "The available evidence does not support a reliable answer.",
+      "abstained": true,
+      "citations": [],
+      "sources": [
+        "operations.md",
+        "people.md",
+        "support.md"
+      ],
+      "recall_at_3": null,
+      "reciprocal_rank": null,
+      "exact_match": null,
+      "token_f1": null,
+      "correct_abstention": 1.0,
+      "retrieval_ms": 7.524708053097129,
+      "answer_ms": 113.22366679087281,
+      "error": null
+    }
+  ]
+}
