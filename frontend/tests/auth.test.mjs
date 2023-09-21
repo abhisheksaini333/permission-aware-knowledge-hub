@@ -5,6 +5,7 @@ import {
   createPkce,
   authorizationUrl,
   validateCallback,
+  logoutUrl,
 } from "../src/auth.mjs";
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 test("PKCE uses unique verifier/state and S256 authorization", async () => {
@@ -38,3 +39,5 @@ test("callback rejects mismatched or expired state", () => {
     "x"
   );
 });
+
+test("logout binds the end-session request to the signed identity token",()=>{const u=new URL(logoutUrl({issuer:"https://id/realms/k"},"signed-id-token","http://localhost:5183/"));assert.equal(u.pathname,"/realms/k/protocol/openid-connect/logout");assert.equal(u.searchParams.get("id_token_hint"),"signed-id-token");assert.equal(u.searchParams.get("post_logout_redirect_uri"),"http://localhost:5183/");});

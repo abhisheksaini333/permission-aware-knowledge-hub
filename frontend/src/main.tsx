@@ -5,6 +5,7 @@ import {
   authorizationUrl,
   validateCallback,
   exchangeCode,
+  logoutUrl,
 } from "./auth.mjs";
 import { apiRequest } from "./http.mjs";
 import "./styles.css";
@@ -26,6 +27,7 @@ type User = {
 function App() {
   const [config, setConfig] = useState<Config | null>(null),
     [access, setAccess] = useState(""),
+    [idToken, setIdToken] = useState(""),
     [user, setUser] = useState<User | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
@@ -52,6 +54,7 @@ function App() {
             location.origin + "/"
           );
           setAccess(tokens.access_token);
+          setIdToken(tokens.id_token);
         }
       } catch (e) {
         setError((e as Error).message);
@@ -91,6 +94,7 @@ function App() {
               onClick={() => {
                 setAccess("");
                 setUser(null);
+                if(config && idToken) location.assign(logoutUrl(config,idToken,location.origin+"/"));
               }}
             >
               Sign out

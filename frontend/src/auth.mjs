@@ -59,3 +59,5 @@ export async function exchangeCode(config, flow, code, redirect) {
   if (!response.ok) throw new Error("Sign-in expired. Please try again.");
   return response.json();
 }
+
+export function logoutUrl(config,idToken,redirect){const url=new URL(config.issuer+"/protocol/openid-connect/logout");url.search=new URLSearchParams({id_token_hint:idToken,post_logout_redirect_uri:redirect}).toString();return url.toString();}
