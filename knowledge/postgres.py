@@ -81,12 +81,31 @@ class PostgresStore(Store):
             ).fetchall()
             return [(json.loads(body), float(score)) for body, score in rows]
 
-    def configure_vector_index(self, strategy):
-        if strategy not in {"exact", "ivfflat"}:
-            raise ValueError("Use exact or ivfflat")
+    def vector_version(self):
+        return self.db.execute("SELECT extversion FROM pg_extension WHERE extname='vector'").fetchone()[0]
+
+    def upgrade_vector_extension(self):
+        """Explicit maintenance operation; install the upgrade image and back up first."""
         with self.transaction():
+            version = self.vector_version()
+            if version == "0.5.0":
+                return version
+            if version != "0.4.0":
+                raise ValueError("Only the verified pgvector 0.4.0 to 0.5.0 upgrade is supported")
+            self.db.execute("ALTER EXTENSION vector UPDATE TO '0.5.0'")
+            return self.vector_version()
+
+    def configure_vector_index(self, strategy):
+        if strategy not in {"exact", "ivfflat", "hnsw"}:
+            raise ValueError("Use exact, ivfflat or hnsw")
+        with self.transaction():
+            if strategy == "hnsw" and tuple(int(part) for part in self.vector_version().split(".")) < (0, 5, 0):
+                raise ValueError("HNSW requires pgvector 0.5.0 or later; upgrade explicitly first")
             self.db.execute("DROP INDEX IF EXISTS knowledge_vector_ivfflat")
+            self.db.execute("DROP INDEX IF EXISTS knowledge_vector_hnsw")
             if strategy == "ivfflat":
                 self.db.execute("CREATE INDEX knowledge_vector_ivfflat ON vectors USING ivfflat (embedding vector_cosine_ops) WITH (lists = 10)")
+            elif strategy == "hnsw":
+                self.db.execute("CREATE INDEX knowledge_vector_hnsw ON vectors USING hnsw (embedding vector_cosine_ops) WITH (m = 16, ef_construction = 64)")
             self.db.execute("ANALYZE vectors")
         return strategy
