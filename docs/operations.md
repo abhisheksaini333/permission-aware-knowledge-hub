@@ -54,6 +54,29 @@ python scripts/vector_index.py exact
 
 Back up first and use a maintenance window. The reference IVFFlat configuration uses ten lists; it is not a tuned recommendation for every corpus. Compare against exact retrieval using your labeled, permission-filtered queries before adopting an approximate index. Approximate nearest-neighbor indexes can reduce recall after tenant/group filtering. The application never relaxes authorization to fill a result page.
 
+## Optional HNSW upgrade
+
+The baseline image retains pgvector 0.4.0. HNSW requires the separate 0.5.0 image; the application refuses to create it against the older extension before changing any existing index. Install the upgrade image during a maintenance window, after a verified dump and restore rehearsal:
+
+```sh
+docker build -f deploy/postgres.Dockerfile -t knowledge-postgres:0.4.0 .
+docker build -f deploy/postgres-hnsw.Dockerfile -t knowledge-postgres:0.5.0 .
+```
+
+Set the PostgreSQL service image to `knowledge-postgres:0.5.0` in a local Compose override, retain the same PostgreSQL volume, and recreate that service. Merely starting the image does not upgrade an existing database's extension. With `DATABASE_URL` pointing to that database, explicitly apply the tested 0.4.0 to 0.5.0 upgrade and construct the index:
+
+```sh
+python scripts/vector_index.py hnsw --upgrade-extension
+# An already upgraded database needs only:
+python scripts/vector_index.py hnsw
+# Return to exact retrieval without downgrading the extension:
+python scripts/vector_index.py exact
+```
+
+The index uses `m=16`, `ef_construction=64`. Runtime `hnsw.ef_search` stays at the extension default unless an operator changes it; raise and measure it for a filtered workload before relying on recall. The acceptance test used `ef_search=200` on 120 deterministic vectors across three tenants and public/restricted documents. Ten authorized nearest results matched the exact baseline. A forced-planner check separately confirmed that PostgreSQL can use the physical HNSW index. This is an integration and authorization check, not a speed benchmark or a universal recall guarantee. The planner may prefer exact scans for a small joined corpus.
+
+The extension upgrade is database-wide. Returning to the exact strategy drops approximate indexes but retains extension 0.5.0; a true binary/extension rollback requires restoring the verified backup into the baseline image. Do not attach a volume containing the upgraded extension to the older binary image.
+
 ## Tested boundaries
 
 Local evidence covers:
