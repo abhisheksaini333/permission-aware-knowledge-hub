@@ -21,13 +21,25 @@ jobs:
           python -m pip check
       - name: Start actual PostgreSQL and pgvector
         run: |
-          docker build -f deploy/postgres.Dockerfile -t knowledge-postgres:test .
+          docker build -f deploy/postgres.Dockerfile -t knowledge-postgres:0.4.0 .
           password=$(openssl rand -hex 20)
           echo "::add-mask::$password"
-          docker run -d --name knowledge-db -e POSTGRES_USER=knowledge -e POSTGRES_DB=knowledge -e POSTGRES_PASSWORD="$password" -p 54383:5432 knowledge-postgres:test
+          docker run -d --name knowledge-db -e POSTGRES_USER=knowledge -e POSTGRES_DB=knowledge -e POSTGRES_PASSWORD="$password" -p 54383:5432 knowledge-postgres:0.4.0
           echo "KNOWLEDGE_TEST_DATABASE=postgresql://knowledge:$password@localhost:54383/knowledge" >> "$GITHUB_ENV"
           for attempt in $(seq 1 30); do
             if docker exec knowledge-db pg_isready -U knowledge -d knowledge; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Start isolated HNSW upgrade target
+        run: |
+          docker build -f deploy/postgres-hnsw.Dockerfile -t knowledge-postgres:0.5.0 .
+          password=$(openssl rand -hex 20)
+          echo "::add-mask::$password"
+          docker run -d --name knowledge-hnsw -e POSTGRES_USER=knowledge -e POSTGRES_DB=knowledge -e POSTGRES_PASSWORD="$password" -p 54384:5432 knowledge-postgres:0.5.0
+          echo "KNOWLEDGE_HNSW_TEST_DATABASE=postgresql://knowledge:$password@localhost:54384/knowledge" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 30); do
+            if docker exec knowledge-hnsw pg_isready -U knowledge -d knowledge; then exit 0; fi
             sleep 1
           done
           exit 1
