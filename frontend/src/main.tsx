@@ -94,7 +94,10 @@ function App() {
               onClick={() => {
                 setAccess("");
                 setUser(null);
-                if(config && idToken) location.assign(logoutUrl(config,idToken,location.origin+"/"));
+                if (config && idToken)
+                  location.assign(
+                    logoutUrl(config, idToken, location.origin + "/")
+                  );
               }}
             >
               Sign out

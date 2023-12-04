@@ -133,13 +133,11 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       "Same signed token: grant, cached answer, group revocation, whole-account revocation"
     );
     async function upload(content) {
-      await admin.page
-        .locator('input[name="file"]')
-        .setInputFiles({
-          name: "lifecycle-laboratory.md",
-          mimeType: "text/markdown",
-          buffer: Buffer.from(content),
-        });
+      await admin.page.locator('input[name="file"]').setInputFiles({
+        name: "lifecycle-laboratory.md",
+        mimeType: "text/markdown",
+        buffer: Buffer.from(content),
+      });
       await admin.page
         .locator('input[name="title"]')
         .fill("Lifecycle laboratory");

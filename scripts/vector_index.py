@@ -19,8 +19,11 @@ def configure(store, strategy, upgrade=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("strategy", choices=["exact", "ivfflat", "hnsw"])
-    parser.add_argument("--upgrade-extension", action="store_true",
-                        help="Explicitly upgrade installed vector 0.4.0 to 0.5.0 before indexing")
+    parser.add_argument(
+        "--upgrade-extension",
+        action="store_true",
+        help="Explicitly upgrade installed vector 0.4.0 to 0.5.0 before indexing",
+    )
     args = parser.parse_args()
     store = open_store(os.environ["DATABASE_URL"])
     try:
