@@ -21,4 +21,6 @@ def test_prompt_includes_question_and_cited_evidence_with_budget():
         citations(used)[0]["url"]
         == "/api/documents/d/revisions/2?page=3&start=10&end=30"
     )
-    assert build_prompt("Q", hits, budget=10)[1] == []
+    import pytest
+    with pytest.raises(ValueError, match="budget"):
+        build_prompt("Q", hits, budget=10)
