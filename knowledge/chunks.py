@@ -1,5 +1,5 @@
 def chunk_text(text, size=700, overlap=100, page=1):
-    if not 0 <= overlap < size:
+    if type(size) is not int or type(overlap) is not int or not 0 <= overlap < size:
         raise ValueError("Overlap must be smaller than chunk size")
     chunks = []
     start = 0

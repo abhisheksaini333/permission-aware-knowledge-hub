@@ -14,7 +14,9 @@ class Settings:
 
     def __post_init__(self):
         if (
-            not 0 <= self.chunk_overlap < self.chunk_size
+            any(type(v) is not int or v < 1 for v in (self.chunk_size, self.max_document_bytes, self.max_query_chars))
+            or type(self.chunk_overlap) is not int
+            or not 0 <= self.chunk_overlap < self.chunk_size
             or self.max_document_bytes <= 0
         ):
             raise ValueError("Invalid document or chunk limits")
