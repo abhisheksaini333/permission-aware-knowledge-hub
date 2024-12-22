@@ -8,32 +8,47 @@ from fastapi import (
     Form,
     Response,
 )
-from pydantic import BaseModel, constr, conlist
+from pydantic import BaseModel, constr, conlist, validator
+from typing import Literal
 
 
-class AccessRequest(BaseModel):
+class RequestModel(BaseModel):
+    @validator("source", "title", check_fields=False)
+    def nonblank_label(cls, value):
+        if not value.strip():
+            raise ValueError("Label must contain text")
+        return value
+
+    @validator("groups", each_item=True, check_fields=False)
+    def nonblank_group(cls, value):
+        if not value.strip():
+            raise ValueError("Group must contain text")
+        return value
+
+
+class AccessRequest(RequestModel):
     groups: conlist(constr(min_length=1, max_length=80), max_items=30)
 
 
-class FeedbackRequest(BaseModel):
+class FeedbackRequest(RequestModel):
     question: constr(min_length=1, max_length=1000)
-    rating: constr(regex="^(helpful|incorrect|missing_source)$")
+    rating: Literal["helpful", "incorrect", "missing_source"]
     comment: constr(max_length=1000) = ""
 
 
-class MembershipRequest(BaseModel):
+class MembershipRequest(RequestModel):
     groups: conlist(constr(min_length=1, max_length=80), max_items=30)
-    roles: conlist(constr(regex="^(reader|admin)$"), max_items=2)
+    roles: conlist(Literal["reader", "admin"], max_items=2)
 
 
-class DocumentRequest(BaseModel):
+class DocumentRequest(RequestModel):
     source: constr(min_length=1, max_length=240)
     title: constr(min_length=1, max_length=200)
     content: constr(min_length=1, max_length=1000000)
     groups: conlist(constr(min_length=1, max_length=80), max_items=30) = []
 
 
-class AskRequest(BaseModel):
+class AskRequest(RequestModel):
     question: constr(min_length=1, max_length=1000)
     mode: str = "lexical"
 
