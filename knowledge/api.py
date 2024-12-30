@@ -13,6 +13,9 @@ from typing import Literal
 
 
 class RequestModel(BaseModel):
+    class Config:
+        extra = "forbid"
+
     @validator("source", "title", check_fields=False)
     def nonblank_label(cls, value):
         if not value.strip():
