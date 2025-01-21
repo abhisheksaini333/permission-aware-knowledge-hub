@@ -27,10 +27,16 @@ def lexical(query, chunks):
 
 
 def cosine(a, b):
-    if len(a) != len(b) or not a or not all(math.isfinite(v) for v in [*a, *b]):
+    if len(a) != len(b) or not a or not all(
+        type(v) in (int, float) and math.isfinite(v) for v in [*a, *b]
+    ):
         raise ValueError("Invalid embedding vector")
+    scale_a, scale_b = max(abs(v) for v in a), max(abs(v) for v in b)
+    if not scale_a or not scale_b:
+        return 0.0
+    a, b = [v / scale_a for v in a], [v / scale_b for v in b]
     norm = math.sqrt(sum(x * x for x in a) * sum(x * x for x in b))
-    return sum(x * y for x, y in zip(a, b)) / norm if norm else 0.0
+    return max(-1.0, min(1.0, sum(x * y for x, y in zip(a, b)) / norm))
 
 
 def dense(vector, chunks):
