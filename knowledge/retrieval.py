@@ -47,6 +47,8 @@ def dense(vector, chunks):
 
 
 def fuse(*rankings, k=60):
+    if type(k) not in (int, float) or not math.isfinite(k) or k < 0:
+        raise ValueError("Fusion constant must be finite and nonnegative")
     scores = {}
     chunks = {}
     for ranking in rankings:
