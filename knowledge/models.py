@@ -39,7 +39,7 @@ class MiniLMEncoder:
 
 
 def generation_limits(max_tokens):
-    if not 1 <= max_tokens <= 128:
+    if type(max_tokens) is not int or not 1 <= max_tokens <= 128:
         raise ValueError("Generation token budget must be 1..128")
     return dict(max_new_tokens=max_tokens, do_sample=False, num_beams=1)
 
