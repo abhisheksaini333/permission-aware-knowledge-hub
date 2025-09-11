@@ -1,4 +1,5 @@
 from collections import Counter
+import math
 from .retrieval import tokens
 
 
@@ -35,12 +36,18 @@ def answer_metrics(answer, abstained, expected):
 
 def average(rows, key):
     values = [r[key] for r in rows if r.get(key) is not None]
+    if any(type(v) not in (int, float) or not math.isfinite(v) for v in values):
+        raise ValueError("Metric observations must be finite numbers")
     return sum(values) / len(values) if values else None
 
 
 def percentile(values, p):
     import math
 
+    if type(p) not in (int, float) or not math.isfinite(p) or not 0 <= p <= 1:
+        raise ValueError("Percentile must be within [0,1]")
+    if any(type(v) not in (int, float) or not math.isfinite(v) or v < 0 for v in values):
+        raise ValueError("Durations must be finite nonnegative numbers")
     if not values:
         return None
     return sorted(values)[max(0, math.ceil(p * len(values)) - 1)]
