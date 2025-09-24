@@ -1,9 +1,11 @@
-import threading, time
+import threading, time, math
 from collections import defaultdict, deque
 
 
 class RateLimiter:
     def __init__(self, limit=120, window=60):
+        if type(limit) is not int or limit < 1 or type(window) not in (int, float) or not math.isfinite(window) or window <= 0:
+            raise ValueError("Positive integer limit and finite positive window required")
         self.limit = limit
         self.window = window
         self.events = defaultdict(deque)
@@ -11,6 +13,8 @@ class RateLimiter:
 
     def allow(self, key, now=None):
         now = time.monotonic() if now is None else now
+        if type(now) not in (int, float) or not math.isfinite(now):
+            raise ValueError("Rate limit timestamp must be finite")
         with self.lock:
             q = self.events[key]
             while q and q[0] <= now - self.window:
