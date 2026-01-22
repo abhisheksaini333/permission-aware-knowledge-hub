@@ -1,4 +1,4 @@
-import sqlite3, shutil
+import sqlite3, shutil, os
 from pathlib import Path
 
 
@@ -9,9 +9,21 @@ def backup_sqlite(store, target):
     if target.exists():
         raise ValueError("Backup destination already exists")
     target.parent.mkdir(parents=True, exist_ok=True)
-    with store.lock, sqlite3.connect(str(target)) as destination:
-        store.db.backup(destination)
-    target.chmod(0o600)
+    try:
+        descriptor = os.open(target, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError as exc:
+        raise ValueError("Backup destination already exists") from exc
+    os.close(descriptor)
+    try:
+        with store.lock:
+            destination = sqlite3.connect(str(target))
+            try:
+                store.db.backup(destination)
+            finally:
+                destination.close()
+    except BaseException:
+        target.unlink(missing_ok=True)
+        raise
 
 
 def restore_sqlite(source, target):
