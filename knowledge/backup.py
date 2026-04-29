@@ -31,9 +31,24 @@ def restore_sqlite(source, target):
     target = Path(target)
     if target.exists():
         raise ValueError("Restore destination must be empty")
-    with sqlite3.connect(f"file:{source.resolve()}?mode=ro", uri=True) as db:
+    db = sqlite3.connect(source.resolve().as_uri() + "?mode=ro", uri=True)
+    try:
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
             raise ValueError("Backup integrity failed")
-    target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, target)
-    target.chmod(0o600)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            descriptor = os.open(target, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        except FileExistsError as exc:
+            raise ValueError("Restore destination must be empty") from exc
+        os.close(descriptor)
+        try:
+            destination = sqlite3.connect(str(target))
+            try:
+                db.backup(destination)
+            finally:
+                destination.close()
+        except BaseException:
+            target.unlink(missing_ok=True)
+            raise
+    finally:
+        db.close()
