@@ -33,7 +33,10 @@ export function authorizationUrl(config, flow, redirect) {
 export function validateCallback(flow, params, now = Date.now()) {
   if (
     !flow ||
-    flow.expires < now ||
+    !Number.isFinite(flow.expires) ||
+    !Number.isFinite(now) ||
+    flow.expires <= now ||
+    flow.expires > now + 300000 ||
     !params.state ||
     flow.state !== params.state ||
     !params.code
