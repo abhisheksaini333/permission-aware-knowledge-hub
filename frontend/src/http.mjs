@@ -1,6 +1,8 @@
 export function messageFor(body) {
+  if (!body || typeof body !== "object")
+    return "The request could not be completed. Please try again.";
   if (Array.isArray(body.detail))
-    return body.detail.map((x) => x.msg || "Invalid input").join("; ");
+    return body.detail.map((x) => typeof x?.msg === "string" ? x.msg : "Invalid input").join("; ");
   return typeof body.detail === "string"
     ? body.detail
     : "The request could not be completed. Please try again.";
@@ -16,7 +18,9 @@ export async function apiRequest(path, access, init = {}) {
   };
   const response = await fetch(path, { ...init, headers, redirect: "error" });
   if (response.status === 204) return null;
-  const body = await response.json();
+  let body;
+  try { body = await response.json(); }
+  catch { throw new Error(`The service returned an unreadable response (${response.status}).`); }
   if (!response.ok) throw new Error(messageFor(body));
   return body;
 }
